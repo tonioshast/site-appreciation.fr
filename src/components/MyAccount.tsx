@@ -123,6 +123,28 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
   const [activeTab, setActiveTab] = useState<"profile" | "entLink" | "downloads" | "installation" | "database">("profile");
 
   const [installBrowserTab, setInstallBrowserTab] = useState<"chromium" | "firefox" | "safari">("chromium");
+  const [extEnt, setExtEnt] = useState<"pronote" | "ecoledirecte">(() =>
+    (user?.ent || "").toLowerCase().includes("pronote") ? "pronote" : "ecoledirecte"
+  );
+
+  const extPacks = {
+    pronote: {
+      label: "Pronote",
+      dir: "pronote",
+      chrome: "apprecIAtion-chrome-pronote.zip",
+      firefox: "apprecIAtion-firefox-pronote.xpi",
+      safari: "apprecIAtion-safari-pronote.zip",
+    },
+    ecoledirecte: {
+      label: "ÉcoleDirecte",
+      dir: "ecoledirecte",
+      chrome: "apprecIAtion-chrome-ED.zip",
+      firefox: "apprecIAtion-firefox-ED.xpi",
+      safari: "apprecIAtion-safari-ED.zip",
+    },
+  } as const;
+  const extPack = extPacks[extEnt];
+  const extFileUrl = (file: string) => `/assets/${extPack.dir}/${file}`;
 
   // Sync state if user changes
   React.useEffect(() => {
@@ -135,6 +157,7 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
       setEditOs(user.systeme_exploitation || "");
       setEditIdentifiantProf(user.identifiant_prof || "");
       setEditEtablissement(user.etablissement || "");
+      setExtEnt((user.ent || "").toLowerCase().includes("pronote") ? "pronote" : "ecoledirecte");
     }
   }, [user]);
 
@@ -2354,8 +2377,29 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
                 <div>
                   <h3 className="text-base font-bold text-white font-display">Téléchargement de l'extension</h3>
                   <p className="text-xs text-slate-400 mt-1">
-                    Paquets <strong className="text-slate-300">signés</strong>, à installer ensuite via l'onglet Installation de l'extension. Pas de magasin, pas d'application Windows / Mac / Linux.
+                    Paquets <strong className="text-slate-300">signés</strong> pour {extPack.label}. Même procédure d'installation ; seuls les fichiers changent.
                   </p>
+                </div>
+
+                <div className="flex bg-slate-900/60 p-1 rounded-xl border border-slate-850 gap-1 w-full max-w-md">
+                  <button
+                    type="button"
+                    onClick={() => setExtEnt("pronote")}
+                    className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                      extEnt === "pronote" ? "bg-blue-600 text-white shadow-md" : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    Pronote
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setExtEnt("ecoledirecte")}
+                    className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                      extEnt === "ecoledirecte" ? "bg-blue-600 text-white shadow-md" : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    ÉcoleDirecte
+                  </button>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -2363,12 +2407,12 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
                     <div>
                       <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-400 mb-1">Chrome & Edge</p>
                       <p className="text-xs font-bold text-white">Paquet Chromium</p>
-                      <p className="text-[10px] text-slate-500 font-mono mt-1">apprecIAtion-chrome.zip</p>
-                      <p className="text-[11px] text-slate-400 mt-2 leading-relaxed">Fichier .zip (ou .crx signé). À charger depuis chrome://extensions ou edge://extensions.</p>
+                      <p className="text-[10px] text-slate-500 font-mono mt-1">{extPack.chrome}</p>
+                      <p className="text-[11px] text-slate-400 mt-2 leading-relaxed">Fichier .zip. À charger depuis chrome://extensions ou edge://extensions.</p>
                     </div>
                     <a
-                      href="/assets/apprecIAtion-chrome.zip"
-                      download="apprecIAtion-chrome.zip"
+                      href={extFileUrl(extPack.chrome)}
+                      download={extPack.chrome}
                       className="w-full bg-slate-950 hover:bg-slate-900 text-slate-300 hover:text-white border border-slate-850 hover:border-slate-800 p-2 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                     >
                       <Download className="w-3.5 h-3.5" />
@@ -2380,12 +2424,12 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
                     <div>
                       <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-400 mb-1">Firefox</p>
                       <p className="text-xs font-bold text-white">Module signé Mozilla</p>
-                      <p className="text-[10px] text-slate-500 font-mono mt-1">apprecIAtion.xpi</p>
+                      <p className="text-[10px] text-slate-500 font-mono mt-1">{extPack.firefox}</p>
                       <p className="text-[11px] text-slate-400 mt-2 leading-relaxed">Glisser-déposer sur Firefox, ou about:addons → installer depuis un fichier.</p>
                     </div>
                     <a
-                      href="/assets/apprecIAtion.xpi"
-                      download="apprecIAtion.xpi"
+                      href={extFileUrl(extPack.firefox)}
+                      download={extPack.firefox}
                       className="w-full bg-slate-950 hover:bg-slate-900 text-slate-300 hover:text-white border border-slate-850 hover:border-slate-800 p-2 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                     >
                       <Download className="w-3.5 h-3.5" />
@@ -2397,12 +2441,12 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
                     <div>
                       <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-400 mb-1">Safari</p>
                       <p className="text-xs font-bold text-white">Safari Web Extension</p>
-                      <p className="text-[10px] text-slate-500 font-mono mt-1">apprecIAtion.safariwebextension.zip</p>
+                      <p className="text-[10px] text-slate-500 font-mono mt-1">{extPack.safari}</p>
                       <p className="text-[11px] text-slate-400 mt-2 leading-relaxed">Décompresser, ouvrir l'app une fois, puis cocher l'extension dans Safari → Réglages.</p>
                     </div>
                     <a
-                      href="/assets/apprecIAtion.safariwebextension.zip"
-                      download="apprecIAtion.safariwebextension.zip"
+                      href={extFileUrl(extPack.safari)}
+                      download={extPack.safari}
                       className="w-full bg-slate-950 hover:bg-slate-900 text-slate-300 hover:text-white border border-slate-850 hover:border-slate-800 p-2 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                     >
                       <Download className="w-3.5 h-3.5" />
@@ -2430,8 +2474,29 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
                 <div>
                   <h3 className="text-base font-bold text-white font-display">Installation de l'extension</h3>
                   <p className="text-xs text-slate-400 mt-1">
-                    apprecIAtion s'installe comme une <strong className="text-slate-300">extension de navigateur signée</strong>, téléchargeable depuis l'onglet Téléchargements. Aucun logiciel Windows / macOS / Linux, aucun magasin d'extensions payant.
+                    Extension signée pour <strong className="text-slate-300">{extPack.label}</strong>. Même gestes d'installation ; le fichier vient de Téléchargements (bascule Pronote / ÉcoleDirecte).
                   </p>
+                </div>
+
+                <div className="flex bg-slate-900/60 p-1 rounded-xl border border-slate-850 gap-1 w-full max-w-md">
+                  <button
+                    type="button"
+                    onClick={() => setExtEnt("pronote")}
+                    className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                      extEnt === "pronote" ? "bg-blue-600 text-white shadow-md" : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    Pronote
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setExtEnt("ecoledirecte")}
+                    className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                      extEnt === "ecoledirecte" ? "bg-blue-600 text-white shadow-md" : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    ÉcoleDirecte
+                  </button>
                 </div>
 
                 <div className="flex bg-slate-900/60 p-1 rounded-xl border border-slate-850 gap-1 w-full max-w-xl">
@@ -2476,7 +2541,7 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
                       <Globe className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
                       <div>
                         <span className="font-bold text-white block mb-0.5">Chrome et Microsoft Edge</span>
-                        Même moteur (Chromium). Fichier : <code className="text-blue-300 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">apprecIAtion-chrome.zip</code> ou <code className="text-blue-300 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">.crx</code> signé, depuis Téléchargements.
+                        Même moteur (Chromium). Fichier {extPack.label} : <code className="text-blue-300 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">{extPack.chrome}</code> (dossier <code className="font-mono text-blue-300">/assets/{extPack.dir}/</code>).
                       </div>
                     </div>
                     <div className="space-y-3 text-xs">
@@ -2510,7 +2575,7 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
                         <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">4</span>
                         <div className="space-y-1">
                           <p className="text-white font-bold">Épingler et utiliser</p>
-                          <p className="text-slate-400 leading-relaxed">Épinglez l'icône apprecIAtion à droite de la barre d'adresse. Ouvrez ÉcoleDirecte : le volet de l'assistant apparaît. Rien n'est écrit sur le disque de l'établissement hors le profil du navigateur.</p>
+                          <p className="text-slate-400 leading-relaxed">Épinglez l'icône apprecIAtion. Ouvrez {extPack.label} : le volet de l'assistant apparaît. Rien n'est écrit sur le disque de l'établissement hors le profil du navigateur.</p>
                         </div>
                       </div>
                     </div>
@@ -2523,7 +2588,7 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
                       <Globe className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
                       <div>
                         <span className="font-bold text-white block mb-0.5">Mozilla Firefox</span>
-                        Fichier signé Mozilla : <code className="text-blue-300 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">apprecIAtion.xpi</code> (onglet Téléchargements).
+                        Fichier signé Mozilla ({extPack.label}) : <code className="text-blue-300 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">{extPack.firefox}</code>.
                       </div>
                     </div>
                     <div className="space-y-3 text-xs">
@@ -2531,7 +2596,7 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
                         <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">1</span>
                         <div className="space-y-1">
                           <p className="text-white font-bold">Télécharger le .xpi</p>
-                          <p className="text-slate-400 leading-relaxed">Depuis Téléchargements, enregistrez <code className="font-mono text-blue-300">apprecIAtion.xpi</code> (ne l'ouvrez pas encore dans un autre logiciel).</p>
+                          <p className="text-slate-400 leading-relaxed">Depuis Téléchargements, enregistrez <code className="font-mono text-blue-300">{extPack.firefox}</code>.</p>
                         </div>
                       </div>
                       <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
@@ -2555,7 +2620,7 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
                         <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">4</span>
                         <div className="space-y-1">
                           <p className="text-white font-bold">Autoriser et épingler</p>
-                          <p className="text-slate-400 leading-relaxed">Si Firefox demande des permissions, acceptez. Épinglez l'icône, puis ouvrez ÉcoleDirecte.</p>
+                          <p className="text-slate-400 leading-relaxed">Si Firefox demande des permissions, acceptez. Épinglez l'icône, puis ouvrez {extPack.label}.</p>
                         </div>
                       </div>
                     </div>
@@ -2576,7 +2641,7 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
                         <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">1</span>
                         <div className="space-y-1">
                           <p className="text-white font-bold">Télécharger le paquet Safari</p>
-                          <p className="text-slate-400 leading-relaxed">Fichier du type <code className="font-mono text-blue-300">apprecIAtion.safariwebextension.zip</code> (ou l'app signée). Décompressez-le si besoin.</p>
+                          <p className="text-slate-400 leading-relaxed">Fichier <code className="font-mono text-blue-300">{extPack.safari}</code>. Décompressez-le si besoin.</p>
                         </div>
                       </div>
                       <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
@@ -2599,8 +2664,8 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
                       <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
                         <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">4</span>
                         <div className="space-y-1">
-                          <p className="text-white font-bold">Utiliser sur ÉcoleDirecte</p>
-                          <p className="text-slate-400 leading-relaxed">Rechargez l'onglet ÉcoleDirecte. L'icône apparaît dans la barre d'outils Safari.</p>
+                          <p className="text-white font-bold">Utiliser sur {extPack.label}</p>
+                          <p className="text-slate-400 leading-relaxed">Rechargez l'onglet {extPack.label}. L'icône apparaît dans la barre d'outils Safari.</p>
                         </div>
                       </div>
                     </div>
