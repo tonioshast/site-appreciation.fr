@@ -1,0 +1,73 @@
+# ----------------------------------------------------------------------
+# 1. Configuration Générale & Masquage Serveur
+# ----------------------------------------------------------------------
+Options -Indexes -MultiViews
+ServerSignature Off
+
+# ----------------------------------------------------------------------
+# 2. En-têtes de Sécurité Avancés
+# ----------------------------------------------------------------------
+<IfModule mod_headers.c>
+    # Empêche l'encapsulation dans un iframe (Protection Clickjacking)
+    Header set X-Frame-Options "SAMEORIGIN"
+
+    # Empêche le MIME-sniffing
+    Header set X-Content-Type-Options "nosniff"
+
+    # Protection XSS legacy (navigateurs anciens)
+    Header set X-XSS-Protection "1; mode=block"
+
+    # Politique de Referrer
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+
+    # Force HTTPS via HSTS (1 an)
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+
+    # Restriction des APIs du navigateur
+    Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+
+    # Exemple basique de Content Security Policy (À ajuster selon vos scripts externes/CDNs)
+    # Header set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;"
+</IfModule>
+
+# ----------------------------------------------------------------------
+# 3. Blocage strict des fichiers sensibles & masqués
+# ----------------------------------------------------------------------
+<FilesMatch "^\.|\.(env|log|ini|conf|bak|sql|sh|yml|yaml|map|git|md)$">
+    Require all denied
+</FilesMatch>
+
+# ----------------------------------------------------------------------
+# 4. Moteur de Réécriture & Sécurisation des APIs
+# ----------------------------------------------------------------------
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    AddDefaultCharset UTF-8
+
+    # A. Redirection HTTPS
+    RewriteCond %{HTTP:X-Forwarded-Proto} !https
+    RewriteCond %{HTTPS} off
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # B. BLOQUER L'ACCÈS DIRECT À TOUS LES SCRIPTS PHP
+    # Si le client tente d'appeler directement un fichier .php dans l'URL (THE_REQUEST)
+    RewriteCond %{THE_REQUEST} \s/.*\.php[\s?] [NC]
+    RewriteRule ^ - [F,L]
+
+    # C. Routage strict des endpoints API (ancrés en début de chaîne avec ^api/)
+    RewriteRule ^api/config$ config.php [L,QSA]
+    RewriteRule ^api/register-prof$ register-prof.php [L,QSA]
+    RewriteRule ^api/generate-comment$ generate-comment.php [L,QSA]
+    RewriteRule ^api/create-checkout-session$ create-checkout-session.php [L,QSA]
+    RewriteRule ^api/validate-payment$ validate-payment.php [L,QSA]
+    RewriteRule ^api/send-code$ send-code.php [L,QSA]
+    RewriteRule ^api/login$ login.php [L,QSA]
+    RewriteRule ^api/update-profile$ update-profile.php [L,QSA]
+    RewriteRule ^api/check-mistral$ check-mistral.php [L,QSA]
+    RewriteRule ^api/verify-code$ verify-code.php [L,QSA]
+
+    # D. Routage SPA (React)
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule . index.html [L]
+</IfModule>

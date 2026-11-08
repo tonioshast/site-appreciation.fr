@@ -1,0 +1,9 @@
+IMPORTANT : DÉPOSEZ VOTRE FICHIER VIDÉO ICI
+-----------------------------------------
+
+Pour que votre vidéo de démonstration apparaisse sur votre site web :
+1. Renommez votre fichier vidéo .mp4 en : apprecIAtion_demo.mp4
+2. Déposez-le directement dans ce dossier (/public/assets/)
+3. Lors du build (npm run build), Vite copiera automatiquement ce fichier dans le dossier final de production (dist/assets/apprecIAtion_demo.mp4).
+
+Vous pouvez également y déposer une image de couverture nommée "video_poster.png" si vous souhaitez personnaliser l'aperçu avant lecture.

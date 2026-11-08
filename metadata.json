@@ -1,0 +1,6 @@
+{
+  "name": "apprecIAtion",
+  "description": "Page d'accueil élégante pour le logiciel d'appréciations et de synthèses IA pour enseignants, respectueux du RGPD et propulsé par Mistral AI.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
