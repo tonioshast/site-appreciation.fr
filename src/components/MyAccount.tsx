@@ -3,9 +3,7 @@ import {
   User, 
   Lock, 
   Mail, 
-  Key, 
   Download, 
-  Video, 
   Database, 
   Save, 
   Check, 
@@ -22,7 +20,6 @@ import {
   ExternalLink,
   BookOpen,
   Plus,
-  Activity,
   RefreshCw,
   Monitor,
   Terminal,
@@ -106,61 +103,12 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
   const [editOs, setEditOs] = useState(user?.systeme_exploitation || "");
   const [editIdentifiantProf, setEditIdentifiantProf] = useState(user?.identifiant_prof || "");
   const [editEtablissement, setEditEtablissement] = useState(user?.etablissement || "");
-  const [editCleApiMistral, setEditCleApiMistral] = useState(user?.cle_api_mistral || "");
   const [ecoleDirecteGuideTab, setEcoleDirecteGuideTab] = useState<"mobile" | "web">("mobile");
   const [focusedField, setFocusedField] = useState<string | null>(null);
   
   const [updateMessage, setUpdateMessage] = useState("");
   const [updateError, setUpdateError] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
-
-  // Mistral API key test states
-  const [isTestingMistral, setIsTestingMistral] = useState(false);
-  const [mistralTestResult, setMistralTestResult] = useState<{ success: boolean; message: string } | null>(null);
-  const [validatedApiKey, setValidatedApiKey] = useState<string | null>(user?.cle_api_mistral?.trim() || null);
-
-  const handleTestMistralConnection = async () => {
-    const trimmed = editCleApiMistral.trim();
-    if (!trimmed) return;
-    setIsTestingMistral(true);
-    setMistralTestResult(null);
-    try {
-      const res = await fetch("/api/check-mistral", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ apiKey: trimmed })
-      });
-
-      const data = await res.json();
-      if (res.ok && data.success) {
-        setValidatedApiKey(trimmed);
-        setMistralTestResult({
-          success: true,
-          message: "✓ Clé API valide ! Connexion avec Mistral AI établie avec succès."
-        });
-      } else {
-        setMistralTestResult({
-          success: false,
-          message: `✗ Échec du test : ${data.error || "Clé incorrecte ou inactive."}`
-        });
-      }
-    } catch (err: any) {
-      setMistralTestResult({
-        success: false,
-        message: "✗ Impossible de contacter le serveur de test ou erreur réseau."
-      });
-    } finally {
-      setIsTestingMistral(false);
-    }
-  };
-
-  const isMistralKeyValidToSave = () => {
-    const trimmed = editCleApiMistral.trim();
-    if (trimmed === "") return true; // Allowed to save empty key (user can fill it later)
-    if (user?.cle_api_mistral && trimmed === user.cle_api_mistral.trim()) return true; // Key already saved previously in DB
-    if (validatedApiKey === trimmed && mistralTestResult?.success === true) return true; // Tested and validated key
-    return false;
-  };
 
   // Email verification states for contact email change
   const [isEmailVerified, setIsEmailVerified] = useState(true);
@@ -172,7 +120,7 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
   const [codeSent, setCodeSent] = useState(false);
 
   // Active dashboard tab state
-  const [activeTab, setActiveTab] = useState<"profile" | "entLink" | "mistral" | "downloads" | "installation" | "database">("profile");
+  const [activeTab, setActiveTab] = useState<"profile" | "entLink" | "downloads" | "installation" | "database">("profile");
 
   // Active installation tab OS state
   const [installOsTab, setInstallOsTab] = useState<"windows" | "macos" | "linux">("windows");
@@ -198,10 +146,6 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
       setEditOs(user.systeme_exploitation || "");
       setEditIdentifiantProf(user.identifiant_prof || "");
       setEditEtablissement(user.etablissement || "");
-      const rawKey = user.cle_api_mistral || "";
-      const displayKey = (typeof rawKey === "string" && rawKey.startsWith("enc_gcm:")) ? "" : rawKey;
-      setEditCleApiMistral(displayKey);
-      setValidatedApiKey(displayKey.trim() || null);
     }
   }, [user]);
 
@@ -1512,7 +1456,7 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
       let token = "";
       let userObj: any = null;
 
-      // 1. Primary: Express proxy /api/login (handles server-side decryption of cle_api_mistral)
+      // 1. Primary: Express / PHP proxy /api/login
       try {
         const res = await fetch("/api/login", {
           method: "POST",
@@ -1553,10 +1497,7 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
         throw new Error("Impossible de se connecter : e-mail ou mot de passe incorrect.");
       }
 
-      // Sanitize cle_api_mistral if raw ciphertext enc_gcm was returned by direct PocketBase
-      if (typeof userObj.cle_api_mistral === "string" && userObj.cle_api_mistral.startsWith("enc_gcm:")) {
-        userObj.cle_api_mistral = "";
-      }
+      delete userObj.cle_api_mistral;
 
       // Enregistrement sécurisé en session (sessionStorage avec auto-expiration à 30 min)
       saveSession(userObj, token);
@@ -1574,11 +1515,6 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
     setUpdateMessage("");
     setUpdateError("");
 
-    if (!isMistralKeyValidToSave()) {
-      setUpdateError("Veuillez tester et valider la clé API Mistral (bouton 'Tester') avant de pouvoir l'enregistrer.");
-      return;
-    }
-
     setIsUpdating(true);
 
     try {
@@ -1594,8 +1530,7 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
           ent: editEnt,
           systeme_exploitation: editOs,
           identifiant_prof: editIdentifiantProf,
-          etablissement: editEtablissement,
-          cle_api_mistral: editCleApiMistral
+          etablissement: editEtablissement
         })
       });
 
@@ -1605,8 +1540,9 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
       }
 
       setUpdateMessage("Votre compte a été mis à jour avec succès dans notre base de données !");
-      setValidatedApiKey(data.user?.cle_api_mistral?.trim() || null);
-      onLogin(data.user); // update parent user state
+      const nextUser = { ...(data.user || {}) };
+      delete nextUser.cle_api_mistral;
+      onLogin(nextUser);
     } catch (err: any) {
       setUpdateError(err.message || "Erreur lors de la synchronisation de vos modifications.");
     } finally {
@@ -1741,18 +1677,6 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
               >
                 <ExternalLink className="w-4 h-4 shrink-0" />
                 <span>Lien avec ENT</span>
-              </button>
-
-              <button
-                onClick={() => setActiveTab("mistral")}
-                className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-left transition-colors cursor-pointer ${
-                  activeTab === "mistral" 
-                    ? "bg-blue-500/10 text-blue-400 border border-blue-500/25 font-semibold" 
-                    : "text-slate-400 hover:text-white hover:bg-slate-900 border border-transparent"
-                }`}
-              >
-                <Key className="w-4 h-4 shrink-0" />
-                <span>Clé API Mistral (Tuto)</span>
               </button>
 
               <button
@@ -2011,50 +1935,6 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
                           <option value="ecole_directe">ÉcoleDirecte</option>
                         </select>
                       </div>
-                    </div>
-
-                    <div className="border-t border-slate-900 pt-4 mt-2">
-                      <label className="block text-xs font-semibold text-slate-400 mb-1">Clé API Mistral AI</label>
-                      <div className="relative">
-                        <Key className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                        <input
-                          type="text"
-                          value={editCleApiMistral}
-                          onChange={(e) => {
-                            setEditCleApiMistral(e.target.value);
-                            setMistralTestResult(null);
-                          }}
-                          placeholder="Ex: CFqhqLK....................... "
-                          className="w-full text-xs pl-9 pr-28 bg-slate-950 border border-slate-850 rounded-lg p-2.5 text-white font-mono focus:border-blue-500 focus:outline-none"
-                        />
-                        <button
-                          type="button"
-                          disabled={isTestingMistral || !editCleApiMistral.trim()}
-                          onClick={handleTestMistralConnection}
-                          className="absolute right-1.5 top-1.5 bottom-1.5 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-blue-400 hover:text-blue-300 font-semibold text-[10px] px-3 rounded-md transition-all cursor-pointer flex items-center gap-1 border border-slate-700/50"
-                        >
-                          {isTestingMistral ? (
-                            <span className="w-3 h-3 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
-                          ) : (
-                            <Activity className="w-3 h-3" />
-                          )}
-                          <span>Tester</span>
-                        </button>
-                      </div>
-                      {!isMistralKeyValidToSave() && !mistralTestResult && (
-                        <p className="text-[11px] font-medium mt-1 text-amber-400 flex items-center gap-1">
-                          <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                          <span>Veuillez cliquer sur "Tester" pour valider cette clé avant l'enregistrement.</span>
-                        </p>
-                      )}
-                      {mistralTestResult && (
-                        <p className={`text-[11px] font-medium mt-1.5 ${mistralTestResult.success ? "text-emerald-400" : "text-rose-400"}`}>
-                          {mistralTestResult.message}
-                        </p>
-                      )}
-                      <p className="text-[10px] text-slate-500 mt-1 leading-normal">
-                        Cette clé est synchronisée avec vos logiciels de bureau pour activer la génération automatique locale. Elle est modifiable à tout moment.
-                      </p>
                     </div>
 
                     <div className="flex justify-end pt-2">
@@ -2478,200 +2358,6 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
             )}
 
             {/* =========================================================================
-               TAB 2: MISTRAL API REGISTRATION & WALKTHROUGH VIDEO
-               ========================================================================= */}
-            {activeTab === "mistral" && (
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-base font-bold text-white font-display">Création de votre compte et clé API Mistral AI</h3>
-                  <p className="text-xs text-slate-400 mt-1">
-                    apprecIAtion utilise la puissance du modèle français souverain Mistral AI pour générer vos appréciations scolaires. Suivez ce guide simple pour récupérer votre clé API personnelle.
-                  </p>
-                </div>
-
-                {/* Video walkthrough block */}
-                <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
-                  <div className="relative aspect-video">
-                    {/* Visual tutorial fallback if mp4 is not yet recorded */}
-                    <div className="absolute inset-0 bg-slate-900 flex flex-col items-center justify-center text-center p-6 space-y-4">
-                      <div className="p-3 bg-indigo-500/10 rounded-full text-indigo-400 border border-indigo-500/20">
-                        <Video className="w-8 h-8 animate-pulse" />
-                      </div>
-                      <div>
-                        <p className="text-xs font-bold text-white uppercase tracking-wider">Tutoriel vidéo pas-à-pas</p>
-                        <p className="text-[11px] text-slate-400 max-w-sm mt-1 mx-auto">
-                          Découvrez comment créer un compte développeur sur Mistral AI et générer votre clé en moins de 2 minutes.
-                        </p>
-                      </div>
-                      <video
-                        src="/assets/1-R%C3%A9cuperer%20une%20cl%C3%A9%20API%20Mistral.mp4#t=0.001"
-                        preload="metadata"
-                        controls
-                        className="absolute inset-0 w-full h-full object-cover"
-                      />
-                    </div>
-                  </div>
-                  <div className="p-3 bg-slate-950 border-t border-slate-900 flex justify-between items-center text-[10px] text-slate-500">
-                    <span className="flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-ping" />
-                      Guide vidéo interactif
-                    </span>
-                    <span>Durée : 1m45s</span>
-                  </div>
-                </div>
-
-                {/* Zone d'intégration de la clé API Mistral */}
-                <div className="bg-slate-900/85 border border-blue-500/30 rounded-xl p-5 space-y-4 shadow-xl relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 blur-xl rounded-full" />
-                  
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 bg-blue-500/10 rounded-lg text-blue-400 border border-blue-500/20 shrink-0">
-                      <Key className="w-5 h-5" />
-                    </div>
-                    <div className="space-y-1">
-                      <h4 className="text-xs font-bold text-white uppercase tracking-wider">Intégration de votre clé API dans la base de données</h4>
-                      <p className="text-[11px] text-slate-400 leading-normal">
-                        Collez ci-dessous la clé API récupérée sur la console Mistral pour l'enregistrer directement dans notre base de données. Elle sera intégrée à votre profil enseignant.
-                      </p>
-                    </div>
-                  </div>
-
-                  <form onSubmit={async (e) => {
-                    e.preventDefault();
-                    setUpdateMessage("");
-                    setUpdateError("");
-
-                    if (!isMistralKeyValidToSave()) {
-                      setUpdateError("Veuillez tester et valider la clé API Mistral (bouton 'Tester') avant de pouvoir l'enregistrer.");
-                      return;
-                    }
-
-                    setIsUpdating(true);
-                    try {
-                      const res = await fetch("/api/update-profile", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                          id_unique: user.id_unique,
-                          cle_api_mistral: editCleApiMistral
-                        })
-                      });
-                      const data = await res.json();
-                      if (!res.ok) throw new Error(data.error || "Erreur de mise à jour");
-                      setValidatedApiKey(data.user?.cle_api_mistral?.trim() || null);
-                      onLogin(data.user);
-                      setUpdateMessage("✓ Clé API Mistral enregistrée avec succès dans votre base de données !");
-                    } catch (err: any) {
-                      setUpdateError(err.message || "Impossible d'enregistrer la clé API.");
-                    } finally {
-                      setIsUpdating(false);
-                    }
-                  }} className="space-y-3">
-                    <div className="flex flex-col sm:flex-row gap-2">
-                      <div className="relative flex-1">
-                        <input
-                          type="text"
-                          placeholder="Ex: CFqhqLK....................... "
-                          value={editCleApiMistral}
-                          onChange={(e) => {
-                            setEditCleApiMistral(e.target.value);
-                            setMistralTestResult(null);
-                          }}
-                          className="w-full text-xs bg-slate-950 border border-slate-800 rounded-lg p-2.5 pr-28 text-white font-mono focus:border-blue-500 focus:outline-none"
-                        />
-                        <button
-                          type="button"
-                          disabled={isTestingMistral || !editCleApiMistral.trim()}
-                          onClick={handleTestMistralConnection}
-                          className="absolute right-1.5 top-1.5 bottom-1.5 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-blue-400 hover:text-blue-300 font-semibold text-[10px] px-3 rounded-md transition-all cursor-pointer flex items-center gap-1 border border-slate-700/50"
-                        >
-                          {isTestingMistral ? (
-                            <span className="w-3 h-3 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
-                          ) : (
-                            <Activity className="w-3 h-3" />
-                          )}
-                          <span>Tester</span>
-                        </button>
-                      </div>
-                      <button
-                        type="submit"
-                        disabled={isUpdating}
-                        className="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-2.5 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer disabled:opacity-50 shrink-0 shadow-md shadow-blue-600/15"
-                      >
-                        <Save className="w-4 h-4" />
-                        <span>{isUpdating ? "Enregistrement..." : "Enregistrer la clé"}</span>
-                      </button>
-                    </div>
-                    {!isMistralKeyValidToSave() && !mistralTestResult && (
-                      <p className="text-[11px] font-medium text-amber-400 flex items-center gap-1">
-                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                        <span>Veuillez cliquer sur "Tester" pour valider cette clé avant l'enregistrement.</span>
-                      </p>
-                    )}
-                    {mistralTestResult && (
-                      <p className={`text-[11px] font-medium ${mistralTestResult.success ? "text-emerald-400" : "text-rose-400"}`}>
-                        {mistralTestResult.message}
-                      </p>
-                    )}
-                    {updateMessage && (
-                      <p className="text-[11px] font-medium text-emerald-400">
-                        {updateMessage}
-                      </p>
-                    )}
-                    {updateError && (
-                      <p className="text-[11px] font-medium text-rose-400">
-                        {updateError}
-                      </p>
-                    )}
-                  </form>
-                </div>
-
-                {/* Step by step tutorial */}
-                <div className="space-y-4 pt-2">
-                  <h4 className="text-xs font-bold text-white uppercase tracking-wider">Étapes d'obtention de la clé API</h4>
-                  
-                  <div className="grid grid-cols-1 gap-3 text-xs">
-                    <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                      <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-bold shrink-0 text-xs">
-                        1
-                      </span>
-                      <div className="space-y-1">
-                        <p className="text-white font-bold">Inscription sur la Console Mistral AI</p>
-                        <p className="text-slate-400 leading-relaxed">
-                          Rendez-vous sur la console officielle de Mistral AI : <a href="https://console.mistral.ai/" target="_blank" rel="noopener noreferrer" className="text-blue-400 underline inline-flex items-center gap-0.5">console.mistral.ai <ExternalLink className="w-3 h-3" /></a> et créez un compte gratuit.
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                      <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-bold shrink-0 text-xs">
-                        2
-                      </span>
-                      <div className="space-y-1">
-                        <p className="text-white font-bold">Génération d'une Clé d'API ("API Key")</p>
-                        <p className="text-slate-400 leading-relaxed">
-                          Allez dans l'onglet <strong>"API Keys"</strong> dans le menu latéral gauche, puis cliquez sur <strong>"Create new key"</strong>. Nommez-la "apprecIAtion" puis copiez le jeton généré (commençant par <code>_mst_...</code>).
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                      <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-bold shrink-0 text-xs">
-                        3
-                      </span>
-                      <div className="space-y-1">
-                        <p className="text-white font-bold">Intégration dans votre logiciel de bureau</p>
-                        <p className="text-slate-400 leading-relaxed">
-                          Ouvrez le logiciel de bureau <strong>apprecIAtion</strong> sur votre ordinateur, collez la clé dans les paramètres de l'application. Elle sera stockée localement sur votre disque dur de manière cryptée et sécurisée.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* =========================================================================
                TAB 3: EXCLUSIVE DOWNLOAD LINKS
                ========================================================================= */}
             {activeTab === "downloads" && (
@@ -2829,7 +2515,7 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
                       <Terminal className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
                       <div>
                         <span className="font-bold text-white block mb-0.5">Pourquoi utiliser la version portable ?</span>
-                        Cette méthode garantit que <strong className="text-white">rien n'est installé ou écrit sur le disque dur de l'ordinateur de l'école ou de votre bureau</strong>. Toutes vos bases de données, vos préférences et votre clé API Mistral restent en sécurité sur votre clé USB portable.
+                        Cette méthode garantit que <strong className="text-white">rien n'est installé ou écrit sur le disque dur de l'ordinateur de l'école ou de votre bureau</strong>. Toutes vos bases de données et vos préférences restent en sécurité sur votre clé USB portable.
                       </div>
                     </div>
 

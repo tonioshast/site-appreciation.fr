@@ -63,7 +63,6 @@ ServerSignature Off
     RewriteRule ^api/send-code$ send-code.php [L,QSA]
     RewriteRule ^api/login$ login.php [L,QSA]
     RewriteRule ^api/update-profile$ update-profile.php [L,QSA]
-    RewriteRule ^api/check-mistral$ check-mistral.php [L,QSA]
     RewriteRule ^api/verify-code$ verify-code.php [L,QSA]
 
     # D. Routage SPA (React)

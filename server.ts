@@ -125,36 +125,6 @@ async function startServer() {
 
   app.use(express.json());
 
-  // API Route to verify a Mistral API key
-  app.post("/api/check-mistral", async (req, res) => {
-    try {
-      const { apiKey } = req.body;
-      if (!apiKey) {
-        return res.status(400).json({ success: false, error: "La clé API est requise." });
-      }
-
-      const realApiKey = decryptApiKey(apiKey);
-
-      const response = await fetch("https://api.mistral.ai/v1/models", {
-        headers: {
-          "Authorization": `Bearer ${realApiKey}`,
-          "Content-Type": "application/json"
-        }
-      });
-
-      if (response.ok) {
-        return res.json({ success: true, message: "Connexion réussie avec Mistral AI !" });
-      } else {
-        const errData: any = await response.json().catch(() => ({}));
-        const message = errData?.message || errData?.error?.message || `Clé API invalide ou inactive (code HTTP ${response.status})`;
-        return res.status(response.status).json({ success: false, error: message });
-      }
-    } catch (err: any) {
-      console.error("Erreur check-mistral:", err);
-      return res.status(500).json({ success: false, error: err.message || "Erreur lors de la vérification de la clé." });
-    }
-  });
-
   // API Route for generating pedagogical comments in french
   app.post("/api/generate-comment", async (req, res) => {
     try {
@@ -506,7 +476,6 @@ Rôles attendus pour chaque version :
             nb_licence: matched.nb_licence || matched.nombre_licences || 1,
             nombre_licences: matched.nombre_licences || matched.nb_licence || 1,
             pack: (matched.pack !== undefined && matched.pack !== null) ? Number(matched.pack) : 1,
-            cle_api_mistral: matched.cle_api_mistral ? decryptApiKey(matched.cle_api_mistral) : null,
             token: userToken
           }
         });
@@ -525,7 +494,7 @@ Rôles attendus pour chaque version :
   // API Route to update professor profile
   app.post("/api/update-profile", async (req, res) => {
     try {
-      const { id_unique, nom, prenom, email, mdp, ent, systeme_exploitation, identifiant_prof, etablissement, cle_api_mistral, pack } = req.body;
+      const { id_unique, nom, prenom, email, mdp, ent, systeme_exploitation, identifiant_prof, etablissement, pack } = req.body;
 
       if (!id_unique) {
         return res.status(400).json({ error: "L'identifiant unique est requis pour la mise à jour." });
@@ -553,18 +522,15 @@ Rôles attendus pour chaque version :
         if (systeme_exploitation !== undefined) updateData.systeme_exploitation = systeme_exploitation;
         if (identifiant_prof !== undefined) updateData.identifiant_prof = identifiant_prof;
         if (etablissement !== undefined) updateData.etablissement = etablissement;
-        if (cle_api_mistral !== undefined) {
-          updateData.cle_api_mistral = cle_api_mistral ? encryptApiKey(cle_api_mistral) : "";
-        }
         if (pack !== undefined) updateData.pack = Number(pack) || 1;
 
         const updated = await pb.collection("profs").update(existing.id, updateData);
         const updatedUser = {
           ...existing,
           ...updated,
-          cle_api_mistral: updated.cle_api_mistral ? decryptApiKey(updated.cle_api_mistral) : (existing.cle_api_mistral ? decryptApiKey(existing.cle_api_mistral) : null),
           compte_valide: (updated.compte_valide === "1" || updated.compte_valide === 1 || updated.compte_valide === "ok") ? "ok" : updated.compte_valide
         };
+        delete (updatedUser as any).cle_api_mistral;
 
         return res.json({
           success: true,
