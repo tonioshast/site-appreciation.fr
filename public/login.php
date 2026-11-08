@@ -104,10 +104,6 @@ try {
     $licenceCount = intval($matched['nb_licence'] ?? $matched['nombre_licences'] ?? 1);
     $expDate = $matched['expiration'] ?? $matched['date'] ?? '';
 
-    // Déchiffrement sécurisé de la clé API Mistral
-    $rawMistralKey = $matched['cle_api_mistral'] ?? null;
-    $decryptedMistralKey = $rawMistralKey ? decrypt_api_key($rawMistralKey) : null;
-
     // Réponse JSON
     echo json_encode([
         "success" => true,
@@ -130,7 +126,6 @@ try {
             "nombre_licences" => $licenceCount,
             "pack" => $packVal,
             "packva" => $packVal,
-            "cle_api_mistral" => $decryptedMistralKey,
             "token" => $token
         ]
     ]);

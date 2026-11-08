@@ -91,10 +91,6 @@ try {
     if (isset($data['etablissement'])) $updateData['etablissement'] = trim($data['etablissement']);
     if (isset($data['pack'])) $updateData['pack'] = intval($data['pack']);
     if (isset($data['packva'])) $updateData['pack'] = intval($data['packva']);
-    if (array_key_exists('cle_api_mistral', $data)) {
-        $rawKey = trim((string)$data['cle_api_mistral']);
-        $updateData['cle_api_mistral'] = !empty($rawKey) ? encrypt_api_key($rawKey) : "";
-    }
 
     // 3. Mettre à jour dans PocketBase
     $upRes = pb_request('PATCH', '/api/collections/profs/records/' . $existing['id'], $updateData);
@@ -102,9 +98,7 @@ try {
     $updatedRecord = isset($upRes['body']['id']) ? $upRes['body'] : array_merge($existing, $updateData);
     $compteValide = (isset($updatedRecord['compte_valide']) && ($updatedRecord['compte_valide'] === '1' || $updatedRecord['compte_valide'] === 1 || $updatedRecord['compte_valide'] === 'ok')) ? 'ok' : (isset($updatedRecord['compte_valide']) ? $updatedRecord['compte_valide'] : 'nok');
 
-    // Déchiffrement de la clé API avant de renvoyer au frontend
-    $rawDbKey = isset($updatedRecord['cle_api_mistral']) ? $updatedRecord['cle_api_mistral'] : '';
-    $updatedRecord['cle_api_mistral'] = decrypt_api_key($rawDbKey);
+    unset($updatedRecord['cle_api_mistral']);
 
     $packVal = isset($updatedRecord['pack']) ? intval($updatedRecord['pack']) : (isset($updatedRecord['packva']) ? intval($updatedRecord['packva']) : 1);
     $updatedRecord['pack'] = $packVal;
