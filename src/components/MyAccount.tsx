@@ -17,7 +17,6 @@ import {
   Laptop, 
   FileText, 
   CheckCircle,
-  ExternalLink,
   BookOpen,
   Plus,
   RefreshCw,
@@ -103,7 +102,7 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
   const [editOs, setEditOs] = useState(user?.systeme_exploitation || "");
   const [editIdentifiantProf, setEditIdentifiantProf] = useState(user?.identifiant_prof || "");
   const [editEtablissement, setEditEtablissement] = useState(user?.etablissement || "");
-  const [ecoleDirecteGuideTab, setEcoleDirecteGuideTab] = useState<"mobile" | "web">("mobile");
+
   const [focusedField, setFocusedField] = useState<string | null>(null);
   
   const [updateMessage, setUpdateMessage] = useState("");
@@ -120,20 +119,31 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
   const [codeSent, setCodeSent] = useState(false);
 
   // Active dashboard tab state
-  const [activeTab, setActiveTab] = useState<"profile" | "entLink" | "downloads" | "installation" | "database">("profile");
+  const [activeTab, setActiveTab] = useState<"profile" | "downloads" | "installation" | "database">("profile");
 
-  // Active installation tab OS state
-  const [installOsTab, setInstallOsTab] = useState<"windows" | "macos" | "linux">("windows");
+  const [installBrowserTab, setInstallBrowserTab] = useState<"chromium" | "firefox" | "safari">("chromium");
+  const [extEnt, setExtEnt] = useState<"pronote" | "ecoledirecte">(() =>
+    (user?.ent || "").toLowerCase().includes("pronote") ? "pronote" : "ecoledirecte"
+  );
 
-  // Sync installOsTab when user's OS is loaded/changed
-  React.useEffect(() => {
-    if (user && user.systeme_exploitation) {
-      const os = user.systeme_exploitation.toLowerCase();
-      if (os === "windows" || os === "macos" || os === "linux") {
-        setInstallOsTab(os as "windows" | "macos" | "linux");
-      }
-    }
-  }, [user]);
+  const extPacks = {
+    pronote: {
+      label: "Pronote",
+      dir: "pronote",
+      chrome: "apprecIAtion-chrome-pronote.zip",
+      firefox: "apprecIAtion-firefox-pronote.xpi",
+      safari: "apprecIAtion-safari-pronote.zip",
+    },
+    ecoledirecte: {
+      label: "ÉcoleDirecte",
+      dir: "ecoledirecte",
+      chrome: "apprecIAtion-chrome-ED.zip",
+      firefox: "apprecIAtion-firefox-ED.xpi",
+      safari: "apprecIAtion-safari-ED.zip",
+    },
+  } as const;
+  const extPack = extPacks[extEnt];
+  const extFileUrl = (file: string) => `/assets/${extPack.dir}/${file}`;
 
   // Sync state if user changes
   React.useEffect(() => {
@@ -146,6 +156,7 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
       setEditOs(user.systeme_exploitation || "");
       setEditIdentifiantProf(user.identifiant_prof || "");
       setEditEtablissement(user.etablissement || "");
+      setExtEnt((user.ent || "").toLowerCase().includes("pronote") ? "pronote" : "ecoledirecte");
     }
   }, [user]);
 
@@ -1668,18 +1679,6 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
               </button>
 
               <button
-                onClick={() => setActiveTab("entLink")}
-                className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-left transition-colors cursor-pointer ${
-                  activeTab === "entLink" 
-                    ? "bg-blue-500/10 text-blue-400 border border-blue-500/25 font-semibold" 
-                    : "text-slate-400 hover:text-white hover:bg-slate-900 border border-transparent"
-                }`}
-              >
-                <ExternalLink className="w-4 h-4 shrink-0" />
-                <span>Lien avec ENT</span>
-              </button>
-
-              <button
                 onClick={() => setActiveTab("downloads")}
                 className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-left transition-colors cursor-pointer ${
                   activeTab === "downloads" 
@@ -1700,7 +1699,7 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
                 }`}
               >
                 <Monitor className="w-4 h-4 shrink-0" />
-                <span>Installation du logiciel</span>
+                <span>Installation de l'extension</span>
               </button>
 
               <button
@@ -1960,863 +1959,302 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
             )}
 
             {/* =========================================================================
-               TAB 2: ENT LINKAGE (STEP 3 ADAPTED GUIDE & INPUTS)
-               ========================================================================= */}
-            {activeTab === "entLink" && (
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-base font-bold text-white font-display">Liaison avec votre espace scolaire (ENT)</h3>
-                  <p className="text-xs text-slate-400 mt-1">
-                    Configurez votre nom d'enseignant et votre établissement scolaire tels qu'ils s'affichent dans votre interface scolaire pour garantir la liaison automatique avec l'extension Chrome apprecIAtion.
-                  </p>
-                </div>
-
-                {updateMessage && (
-                  <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-lg text-xs flex items-start gap-2.5 animate-fadeIn">
-                    <Check className="w-4 h-4 shrink-0 mt-0.5" />
-                    <span>{updateMessage}</span>
-                  </div>
-                )}
-
-                {updateError && (
-                  <div className="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-lg text-xs flex items-start gap-2.5 animate-fadeIn">
-                    <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-                    <span>{updateError}</span>
-                  </div>
-                )}
-
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                  {/* Left Column: Form Inputs & Warning (7 cols) */}
-                  <div className="lg:col-span-7 space-y-4">
-                    
-                    {/* Crucial Identification Warning */}
-                    <div className="bg-amber-500/5 border border-amber-500/20 p-3.5 rounded-xl space-y-2">
-                      <div className="flex items-center gap-2 text-amber-400 font-bold text-xs uppercase tracking-wider">
-                        <AlertTriangle className="w-4 h-4 shrink-0" />
-                        <span>Informations de liaison cruciales</span>
-                      </div>
-                      <p className="text-[11px] text-slate-300 leading-relaxed">
-                        Ces informations sont indispensables pour l'utilisation du logiciel apprecIAtion.
-                      </p>
-                      <p className="text-[11px] text-amber-400 font-medium leading-relaxed">
-                        ⚠️ Respectez rigoureusement les majuscules, les minuscules, les espaces et les accents (comme indiqué sur le guide visuel). En cas d'erreur de saisie, l'accès à l'interface pourra vous être refusé.
-                      </p>
-                    </div>
-
-                    {/* Form */}
-                    <form onSubmit={handleUpdateProfileSubmit} className="space-y-4">
-                      
-                      {/* ENT Selector */}
-                      <div>
-                        <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                          Interface de scolarité (ENT) utilisée *
-                        </label>
-                        <div className="grid grid-cols-2 gap-3">
-                          <button
-                            type="button"
-                            onClick={() => setEditEnt("pronote")}
-                            className={`p-2.5 rounded-lg border text-left flex items-center justify-between transition-all cursor-pointer ${
-                              editEnt === "pronote"
-                                ? "bg-emerald-500/10 border-emerald-500/40 text-white"
-                                : "bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700"
-                            }`}
-                          >
-                            <div className="flex flex-col">
-                              <span className="text-xs font-bold font-display">PRONOTE</span>
-                              <span className="text-[9px] text-slate-500">Interface classique</span>
-                            </div>
-                            <div className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${editEnt === "pronote" ? "border-emerald-500 bg-emerald-500 text-slate-950" : "border-slate-700"}`}>
-                              {editEnt === "pronote" && <Check className="w-2.5 h-2.5 stroke-[4]" />}
-                            </div>
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => setEditEnt("ecole_directe")}
-                            className={`p-2.5 rounded-lg border text-left flex items-center justify-between transition-all cursor-pointer ${
-                              editEnt === "ecole_directe" || editEnt === "ecoledirecte"
-                                ? "bg-emerald-500/10 border-emerald-500/40 text-white"
-                                : "bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700"
-                            }`}
-                          >
-                            <div className="flex flex-col">
-                              <span className="text-xs font-bold font-display">EcoleDirecte</span>
-                              <span className="text-[9px] text-slate-500">Charte bleue</span>
-                            </div>
-                            <div className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${editEnt === "ecole_directe" || editEnt === "ecoledirecte" ? "border-emerald-500 bg-emerald-500 text-slate-950" : "border-slate-700"}`}>
-                              {(editEnt === "ecole_directe" || editEnt === "ecoledirecte") && <Check className="w-2.5 h-2.5 stroke-[4]" />}
-                            </div>
-                          </button>
-                        </div>
-                        {editEnt === "" && (
-                          <p className="text-[10px] text-amber-400 font-medium mt-1">
-                            ⚠️ Veuillez choisir l'interface scolaire que vous utilisez (PRONOTE ou EcoleDirecte).
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Field 1: Teacher Identifier */}
-                      <div>
-                        <label className="block text-xs font-semibold text-slate-300 mb-1">
-                          Identifiant exact de l'enseignant dans {editEnt === "ecole_directe" || editEnt === "ecoledirecte" ? "EcoleDirecte" : editEnt === "pronote" ? "PRONOTE" : "votre ENT"} *
-                        </label>
-                        <input 
-                          type="text" 
-                          required
-                          value={editIdentifiantProf}
-                          onChange={(e) => setEditIdentifiantProf(e.target.value)}
-                          placeholder={editEnt === "ecole_directe" || editEnt === "ecoledirecte" ? "M. Antoine MARAIS" : editEnt === "pronote" ? "M. Olivier BERTRAND" : "Ex: M. Antoine MARAIS"}
-                          onFocus={() => setFocusedField("editIdentifiantProf")}
-                          onBlur={() => setFocusedField(null)}
-                          className="w-full text-xs bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        />
-                        <p className="text-[10px] text-slate-500 mt-1">
-                          Trouvez-le en haut à gauche de votre espace personnel ou sur votre profil (voir l'aide visuelle ci-contre).
-                        </p>
-                      </div>
-
-                      {/* Field 2: School Name */}
-                      <div>
-                        <label className="block text-xs font-semibold text-slate-300 mb-1">
-                          Nom complet de l'établissement scolaire dans {editEnt === "ecole_directe" || editEnt === "ecoledirecte" ? "EcoleDirecte" : editEnt === "pronote" ? "PRONOTE" : "votre ENT"} *
-                        </label>
-                        <input 
-                          type="text" 
-                          required
-                          value={editEtablissement}
-                          onChange={(e) => setEditEtablissement(e.target.value)}
-                          placeholder={editEnt === "ecole_directe" || editEnt === "ecoledirecte" ? "Collège St Vincent" : editEnt === "pronote" ? "Lycée Léonard de Vinci" : "Ex: Collège St Vincent"}
-                          onFocus={() => setFocusedField("editEtablissement")}
-                          onBlur={() => setFocusedField(null)}
-                          className="w-full text-xs bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        />
-                        <p className="text-[10px] text-slate-500 mt-1">
-                          Saisissez le nom de votre collège/lycée rigoureusement à l'identique.
-                        </p>
-                      </div>
-
-                      <button
-                        type="submit"
-                        disabled={isUpdating}
-                        className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:opacity-50 text-white font-bold text-xs py-2.5 rounded-lg shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
-                      >
-                        {isUpdating ? (
-                          <>
-                            <span className="w-3.5 h-3.5 border-2 border-white/35 border-t-white rounded-full animate-spin" />
-                            <span>Enregistrement en cours...</span>
-                          </>
-                        ) : (
-                          <>
-                            <Save className="w-4 h-4" />
-                            <span>Enregistrer la liaison ENT</span>
-                          </>
-                        )}
-                      </button>
-                    </form>
-
-                  </div>
-
-                  {/* Right Column: Interactive Graphic Guide (5 cols) */}
-                  <div className="lg:col-span-5 space-y-3.5">
-                    <div className="bg-slate-950 rounded-xl p-4 border border-slate-850 flex flex-col justify-between">
-                      <div className="space-y-3">
-                        <div className="text-center space-y-1">
-                          <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block">
-                            Aide Visuelle • Où trouver vos infos ?
-                          </span>
-                          {(editEnt === "ecole_directe" || editEnt === "ecoledirecte") && (
-                            <p className="text-[11px] text-slate-300 font-medium leading-snug">
-                              Ces informations sont directement disponibles :
-                            </p>
-                          )}
-                        </div>
-
-                        {/* LIVE RENDER OF SELECT PLATFORM SIDEBAR */}
-                        {(editEnt === "ecole_directe" || editEnt === "ecoledirecte") ? (
-                          <div className="space-y-3">
-                            {/* Tabs for Image 1 (Mobile) and Image 2 (Web) */}
-                            <div className="grid grid-cols-2 gap-1.5 p-1 bg-slate-900 rounded-lg border border-slate-800 text-[11px] font-semibold">
-                              <button
-                                type="button"
-                                onClick={() => setEcoleDirecteGuideTab("mobile")}
-                                className={`px-2 py-1.5 rounded-md flex flex-col items-center justify-center transition-all cursor-pointer ${
-                                  ecoleDirecteGuideTab === "mobile"
-                                    ? "bg-blue-600 text-white shadow-md font-bold"
-                                    : "text-slate-400 hover:text-slate-200"
-                                }`}
-                              >
-                                <span>1. App Mobile</span>
-                                <span className="text-[9px] opacity-80">(Image 1)</span>
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => setEcoleDirecteGuideTab("web")}
-                                className={`px-2 py-1.5 rounded-md flex flex-col items-center justify-center transition-all cursor-pointer ${
-                                  ecoleDirecteGuideTab === "web"
-                                    ? "bg-blue-600 text-white shadow-md font-bold"
-                                    : "text-slate-400 hover:text-slate-200"
-                                }`}
-                              >
-                                <span>2. Site Web</span>
-                                <span className="text-[9px] opacity-80">(Image 2)</span>
-                              </button>
-                            </div>
-
-                            {/* Explanation banner */}
-                            <div className="bg-blue-950/50 border border-blue-800/30 p-2 rounded-lg text-[10px] text-blue-200 leading-snug">
-                              {ecoleDirecteGuideTab === "mobile" ? (
-                                <p>
-                                  <strong className="text-white">1. En ouvrant l'application mobile EcoleDirecte sur le téléphone :</strong> Votre profil enseignant et votre établissement apparaissent dans le menu supérieur.
-                                </p>
-                              ) : (
-                                <p>
-                                  <strong className="text-white">2. Sur le site web EcoleDirecte, une fois connecté :</strong> Votre établissement s'affiche en haut sous le logo et votre nom d'enseignant dans le bouton en haut à droite.
-                                </p>
-                              )}
-                            </div>
-
-                            {ecoleDirecteGuideTab === "mobile" ? (
-                              /* IMAGE 1: Mobile App Drawer Mockup */
-                              <div className="bg-[#0c4890] rounded-xl overflow-hidden shadow-2xl text-white font-sans text-xs max-w-xs mx-auto border border-blue-500/20">
-                                <div className="bg-[#08366e] px-3 py-1 flex justify-between items-center text-[9px] text-blue-200/80 font-mono">
-                                  <span>14:10</span>
-                                  <div className="flex items-center gap-1.5 text-[8px]">
-                                    <span>📶 5G</span>
-                                    <span>🔋 84%</span>
-                                  </div>
-                                </div>
-
-                                <div className="p-3.5 pb-4 space-y-2.5 relative bg-[#0c4890]">
-                                  <div className="flex items-center gap-2.5">
-                                    <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center p-1 text-[8px] font-bold text-[#0c4890] shrink-0 border border-blue-100 shadow">
-                                      <div className="text-center leading-none">
-                                        <span className="text-[#0c4890] font-extrabold block text-[6px]">t.Vin</span>
-                                        <span className="text-amber-500 text-[5px]">école</span>
-                                      </div>
-                                    </div>
-
-                                    <div className="min-w-0 flex-1">
-                                      <p className="text-[9px] text-blue-200 uppercase tracking-wider font-semibold opacity-90 leading-none mb-1">
-                                        Mon espace Enseignant
-                                      </p>
-
-                                      <div className={`relative transition-all duration-300 rounded px-1.5 py-0.5 -mx-1.5 ${
-                                        focusedField === "editIdentifiantProf"
-                                          ? "ring-2 ring-amber-500 bg-amber-500/20 animate-pulse"
-                                          : "hover:bg-blue-800/40"
-                                      }`}>
-                                        <p className="text-[12px] font-bold truncate">
-                                          {editIdentifiantProf || "M. Antoine MARAIS"}
-                                        </p>
-                                        <span className="absolute -top-3.5 -right-1 bg-amber-500 text-slate-950 font-bold text-[7px] px-1 rounded shadow pointer-events-none">
-                                          Identifiant
-                                        </span>
-                                      </div>
-
-                                      <div className={`relative transition-all duration-300 rounded px-1.5 py-0.5 -mx-1.5 mt-0.5 ${
-                                        focusedField === "editEtablissement"
-                                          ? "ring-2 ring-amber-500 bg-amber-500/20 animate-pulse"
-                                          : "hover:bg-blue-800/40"
-                                      }`}>
-                                        <p className="text-[10px] text-blue-100/90 truncate">
-                                          {editEtablissement || "Collège St Vincent"}
-                                        </p>
-                                        <span className="absolute -bottom-3.5 -right-1 bg-amber-500 text-slate-950 font-bold text-[7px] px-1 rounded shadow pointer-events-none">
-                                          Établissement
-                                        </span>
-                                      </div>
-
-                                    </div>
-                                  </div>
-                                </div>
-
-                                <div className="bg-[#104b93] p-2 space-y-1 text-[10px]">
-                                  <div className="bg-white text-[#0c4890] font-bold px-3 py-1.5 rounded-lg flex items-center gap-2 shadow-sm">
-                                    <span>🏠</span>
-                                    <span>Accueil</span>
-                                  </div>
-                                  <div className="px-3 py-1 flex items-center gap-2 text-blue-100">
-                                    <span>✉️</span>
-                                    <span>Messagerie</span>
-                                  </div>
-                                  <div className="px-3 py-1 flex items-center gap-2 text-blue-100">
-                                    <span>📋</span>
-                                    <span>Feuille d'appel</span>
-                                  </div>
-                                </div>
-                              </div>
-                            ) : (
-                              /* IMAGE 2: Web Site Mockup */
-                              <div className="bg-slate-900 rounded-xl overflow-hidden shadow-2xl text-white font-sans text-xs max-w-xs mx-auto border border-blue-500/30">
-                                <div className="bg-[#0c4890] p-2 px-3 border-b border-blue-800 flex justify-between items-center">
-                                  <div>
-                                    <span className="text-[8px] font-extrabold uppercase tracking-wider text-blue-200 block leading-tight">
-                                      MON ESPACE ENSEIGNANT
-                                    </span>
-                                    <div className={`relative transition-all duration-300 rounded px-1 py-0.5 inline-block ${
-                                      focusedField === "editEtablissement"
-                                        ? "ring-2 ring-amber-500 bg-amber-500/20 animate-pulse"
-                                        : "hover:bg-blue-800/40"
-                                    }`}>
-                                      <span className="text-[10px] font-bold text-white">
-                                        {editEtablissement || "Collège St Vincent"}
-                                      </span>
-                                      <span className="absolute -bottom-3 left-0 bg-amber-500 text-slate-950 font-bold text-[7px] px-1 rounded shadow pointer-events-none whitespace-nowrap">
-                                        Établissement
-                                      </span>
-                                    </div>
-                                  </div>
-
-                                  <div className={`relative transition-all duration-300 rounded px-2 py-1 flex items-center gap-1.5 bg-[#082a56] border border-blue-400/30 ${
-                                    focusedField === "editIdentifiantProf"
-                                      ? "ring-2 ring-amber-500 bg-amber-500/20 animate-pulse"
-                                      : ""
-                                  }`}>
-                                    <div className="w-3.5 h-3.5 rounded-full bg-blue-300 text-blue-950 flex items-center justify-center text-[7px] font-bold">
-                                      👤
-                                    </div>
-                                    <span className="text-[10px] font-bold text-white truncate max-w-[90px]">
-                                      {editIdentifiantProf || "M. Antoine MARAIS"}
-                                    </span>
-                                    <span className="absolute -bottom-3 right-0 bg-amber-500 text-slate-950 font-bold text-[7px] px-1 rounded shadow pointer-events-none whitespace-nowrap">
-                                      Identifiant exact
-                                    </span>
-                                  </div>
-                                </div>
-
-                                <div className="p-3 bg-slate-950 text-center space-y-2">
-                                  <div className="bg-slate-900/90 border border-slate-850 p-2 rounded text-[9px] text-slate-300">
-                                    <p className="font-semibold text-slate-200">BOÎTE DE RÉCEPTION</p>
-                                  </div>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        ) : (
-                          /* PRONOTE STYLE PREVIEW */
-                          <div className="bg-[#2a3035] rounded-xl overflow-hidden shadow-2xl text-slate-100 font-sans text-xs max-w-xs mx-auto border border-slate-800">
-                            <div className="bg-[#202528] border-b-4 border-[#2ecc71] px-3.5 py-2 flex justify-between items-center text-[9px] font-bold text-slate-300">
-                              <span>PRONOTE</span>
-                              <span className="text-[#2ecc71]">ESPACE ENSEIGNANTS</span>
-                            </div>
-
-                            <div className="p-3 bg-slate-950 space-y-2.5">
-                              <span className="text-[9px] text-[#2ecc71] font-bold uppercase tracking-widest">Identité du compte</span>
-                              
-                              <div className={`relative transition-all duration-300 rounded px-2 py-1 ${
-                                focusedField === "editIdentifiantProf"
-                                  ? "ring-2 ring-amber-500 bg-amber-500/20 animate-pulse"
-                                  : "bg-slate-900 border border-slate-850"
-                              }`}>
-                                <p className="text-[11px] font-bold text-white">
-                                  {editIdentifiantProf || "M. Olivier BERTRAND"}
-                                </p>
-                                <span className="absolute -top-3 -right-1 bg-amber-500 text-slate-950 font-bold text-[7px] px-1 rounded shadow pointer-events-none scale-90">
-                                  Identifiant
-                                </span>
-                              </div>
-
-                              <div className={`relative transition-all duration-300 rounded px-2 py-1 ${
-                                focusedField === "editEtablissement"
-                                  ? "ring-2 ring-amber-500 bg-amber-500/20 animate-pulse"
-                                  : "bg-slate-900 border border-slate-850"
-                              }`}>
-                                <p className="text-[10px] text-slate-400">
-                                  {editEtablissement || "Lycée Léonard de Vinci"}
-                                </p>
-                                <span className="absolute -bottom-3 -right-1 bg-amber-500 text-slate-950 font-bold text-[7px] px-1 rounded shadow pointer-events-none scale-90">
-                                  Établissement
-                                </span>
-                              </div>
-                            </div>
-
-                            <div className="bg-slate-900 p-2 grid grid-cols-2 gap-1.5 text-[9px] text-center text-slate-400">
-                              <div className="bg-slate-950 p-2 rounded border border-slate-800 flex flex-col items-center gap-1">
-                                <span className="w-1.5 h-1.5 rounded-full bg-[#2ecc71]" />
-                                <span>Cahier de textes</span>
-                              </div>
-                              <div className="bg-slate-950 p-2 rounded border border-slate-850 flex flex-col items-center gap-1">
-                                <span className="w-1.5 h-1.5 rounded-full bg-[#2ecc71]" />
-                                <span>Saisie des notes</span>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        <div className="text-center bg-slate-900/50 p-2 rounded-lg border border-slate-850 mt-2">
-                          <p className="text-[10px] text-slate-400">
-                            L'identifiant exact de l'utilisateur correspond au nom de votre compte enseignant connecté. Respectez bien les accents et majuscules.
-                          </p>
-                        </div>
-
-                      </div>
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-            )}
-
-            {/* =========================================================================
-               TAB 3: EXCLUSIVE DOWNLOAD LINKS
+               TAB 3: TÉLÉCHARGEMENTS EXTENSIONS SIGNÉES
                ========================================================================= */}
             {activeTab === "downloads" && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-base font-bold text-white font-display">Téléchargement des applications apprecIAtion</h3>
+                  <h3 className="text-base font-bold text-white font-display">Téléchargement de l'extension</h3>
                   <p className="text-xs text-slate-400 mt-1">
-                    Récupérez l'installeur ou le binaire de bureau d'apprecIAtion prêt à l'emploi. Pour rappel, votre système d'exploitation par défaut configuré est <span className="capitalize text-blue-400 font-bold">{user.systeme_exploitation}</span>.
+                    Paquets <strong className="text-slate-300">signés</strong> pour {extPack.label}. Même procédure d'installation ; seuls les fichiers changent.
                   </p>
                 </div>
 
-                {/* Main recommended package card */}
-                <div className="p-5 bg-slate-900/80 rounded-2xl border border-indigo-500/20 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 blur-2xl rounded-full" />
-                  
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 bg-blue-500/10 rounded-xl text-blue-400 border border-blue-500/20">
-                      <Laptop className="w-8 h-8" />
-                    </div>
-                    <div className="text-left space-y-1">
-                      <span className="text-[10px] bg-indigo-500/10 text-indigo-400 px-2 py-0.5 rounded border border-indigo-500/20 font-bold uppercase tracking-wider">
-                        Recommandé pour vous
-                      </span>
-                      <h4 className="text-sm font-bold text-white uppercase tracking-wider">
-                        Version {user.systeme_exploitation === "windows" ? "Windows (Binaire .zip)" : user.systeme_exploitation === "macos" ? "macOS (Mac App .zip)" : "Linux (.zip)"}
-                      </h4>
-                      <p className="text-[11px] text-slate-400 leading-relaxed">
-                        Fichier : <span className="font-mono text-blue-300">{user.systeme_exploitation === "windows" ? "apprecIAtion_win.zip" : user.systeme_exploitation === "macos" ? "apprecIAtion_mac.zip" : "apprecIAtion_linux.zip"}</span>
-                      </p>
-                    </div>
-                  </div>
-
-                  <a
-                    href={user.systeme_exploitation === "windows" ? "/assets/apprecIAtion_win.zip" : user.systeme_exploitation === "macos" ? "/assets/apprecIAtion_mac.zip" : "/assets/apprecIAtion_linux.zip"}
-                    download={user.systeme_exploitation === "windows" ? "apprecIAtion_win.zip" : user.systeme_exploitation === "macos" ? "apprecIAtion_mac.zip" : "apprecIAtion_linux.zip"}
-                    className="w-full md:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs px-6 py-3 rounded-lg shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
+                <div className="flex bg-slate-900/60 p-1 rounded-xl border border-slate-850 gap-1 w-full max-w-md">
+                  <button
+                    type="button"
+                    onClick={() => setExtEnt("pronote")}
+                    className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                      extEnt === "pronote" ? "bg-blue-600 text-white shadow-md" : "text-slate-400 hover:text-white"
+                    }`}
                   >
-                    <Download className="w-4 h-4 shrink-0" />
-                    <span>Télécharger ({user.systeme_exploitation === "windows" ? "Windows" : user.systeme_exploitation === "macos" ? "macOS" : "Linux"})</span>
-                  </a>
+                    Pronote
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setExtEnt("ecoledirecte")}
+                    className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                      extEnt === "ecoledirecte" ? "bg-blue-600 text-white shadow-md" : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    ÉcoleDirecte
+                  </button>
                 </div>
 
-                {/* Other systems downloads */}
-                <div className="space-y-3 pt-2">
-                  <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Tous nos installeurs disponibles</h4>
-                  
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    
-                    {/* Windows package */}
-                    <div className="bg-slate-900/40 p-4 rounded-xl border border-slate-850 flex flex-col justify-between items-start space-y-3">
-                      <div>
-                        <p className="text-xs font-bold text-white">Windows (10 / 11)</p>
-                        <p className="text-[10px] text-slate-500 font-mono mt-1">apprecIAtion_win.zip</p>
-                      </div>
-                      <a
-                        href="/assets/apprecIAtion_win.zip"
-                        download="apprecIAtion_win.zip"
-                        className="w-full bg-slate-950 hover:bg-slate-900 text-slate-300 hover:text-white border border-slate-850 hover:border-slate-800 p-2 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-                      >
-                        <Download className="w-3.5 h-3.5" />
-                        <span>Télécharger .zip</span>
-                      </a>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="bg-slate-900/40 p-4 rounded-xl border border-slate-850 flex flex-col justify-between space-y-3">
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-400 mb-1">Chrome & Edge</p>
+                      <p className="text-xs font-bold text-white">Paquet Chromium</p>
+                      <p className="text-[10px] text-slate-500 font-mono mt-1">{extPack.chrome}</p>
+                      <p className="text-[11px] text-slate-400 mt-2 leading-relaxed">Fichier .zip. À charger depuis chrome://extensions ou edge://extensions.</p>
                     </div>
+                    <a
+                      href={extFileUrl(extPack.chrome)}
+                      download={extPack.chrome}
+                      className="w-full bg-slate-950 hover:bg-slate-900 text-slate-300 hover:text-white border border-slate-850 hover:border-slate-800 p-2 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>Télécharger</span>
+                    </a>
+                  </div>
 
-                    {/* macOS package */}
-                    <div className="bg-slate-900/40 p-4 rounded-xl border border-slate-850 flex flex-col justify-between items-start space-y-3">
-                      <div>
-                        <p className="text-xs font-bold text-white">macOS (Intel & Silicon)</p>
-                        <p className="text-[10px] text-slate-500 font-mono mt-1">apprecIAtion_mac.zip</p>
-                      </div>
-                      <a
-                        href="/assets/apprecIAtion_mac.zip"
-                        download="apprecIAtion_mac.zip"
-                        className="w-full bg-slate-950 hover:bg-slate-900 text-slate-300 hover:text-white border border-slate-850 hover:border-slate-800 p-2 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-                      >
-                        <Download className="w-3.5 h-3.5" />
-                        <span>Télécharger .zip</span>
-                      </a>
+                  <div className="bg-slate-900/40 p-4 rounded-xl border border-slate-850 flex flex-col justify-between space-y-3">
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-400 mb-1">Firefox</p>
+                      <p className="text-xs font-bold text-white">Module signé Mozilla</p>
+                      <p className="text-[10px] text-slate-500 font-mono mt-1">{extPack.firefox}</p>
+                      <p className="text-[11px] text-slate-400 mt-2 leading-relaxed">Glisser-déposer sur Firefox, ou about:addons → installer depuis un fichier.</p>
                     </div>
+                    <a
+                      href={extFileUrl(extPack.firefox)}
+                      download={extPack.firefox}
+                      className="w-full bg-slate-950 hover:bg-slate-900 text-slate-300 hover:text-white border border-slate-850 hover:border-slate-800 p-2 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>Télécharger</span>
+                    </a>
+                  </div>
 
-                    {/* Linux package */}
-                    <div className="bg-slate-900/40 p-4 rounded-xl border border-slate-850 flex flex-col justify-between items-start space-y-3">
-                      <div>
-                        <p className="text-xs font-bold text-white">Linux (Debian / Ubuntu)</p>
-                        <p className="text-[10px] text-slate-500 font-mono mt-1">apprecIAtion_linux.zip</p>
-                      </div>
-                      <a
-                        href="/assets/apprecIAtion_linux.zip"
-                        download="apprecIAtion_linux.zip"
-                        className="w-full bg-slate-950 hover:bg-slate-900 text-slate-300 hover:text-white border border-slate-850 hover:border-slate-800 p-2 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-                      >
-                        <Download className="w-3.5 h-3.5" />
-                        <span>Télécharger .zip</span>
-                      </a>
+                  <div className="bg-slate-900/40 p-4 rounded-xl border border-slate-850 flex flex-col justify-between space-y-3">
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-400 mb-1">Safari</p>
+                      <p className="text-xs font-bold text-white">Safari Web Extension</p>
+                      <p className="text-[10px] text-slate-500 font-mono mt-1">{extPack.safari}</p>
+                      <p className="text-[11px] text-slate-400 mt-2 leading-relaxed">Décompresser, ouvrir l'app une fois, puis cocher l'extension dans Safari → Réglages.</p>
                     </div>
-
+                    <a
+                      href={extFileUrl(extPack.safari)}
+                      download={extPack.safari}
+                      className="w-full bg-slate-950 hover:bg-slate-900 text-slate-300 hover:text-white border border-slate-850 hover:border-slate-800 p-2 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>Télécharger</span>
+                    </a>
                   </div>
                 </div>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("installation")}
+                  className="text-xs text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1 cursor-pointer bg-transparent border-none p-0"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                  Voir le protocole d'installation
+                </button>
               </div>
             )}
 
             {/* =========================================================================
-               TAB 3.5: INSTALLATION INSTRUCTIONS (PORTABLE VERSION GUIDE)
+               TAB 3.5: INSTALLATION DE L'EXTENSION (SIDELLOAD SIGNÉ)
                ========================================================================= */}
             {activeTab === "installation" && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-base font-bold text-white font-display">Guide d'installation et de portabilité</h3>
+                  <h3 className="text-base font-bold text-white font-display">Installation de l'extension</h3>
                   <p className="text-xs text-slate-400 mt-1">
-                    apprecIAtion est un logiciel autonome et entièrement portable. Apprenez comment le configurer pour travailler directement depuis une clé USB sur n'importe quel ordinateur, sans aucune installation locale requise.
+                    Extension signée pour <strong className="text-slate-300">{extPack.label}</strong>. Même gestes d'installation ; le fichier vient de Téléchargements (bascule Pronote / ÉcoleDirecte).
                   </p>
                 </div>
 
-                {/* OS Switcher */}
                 <div className="flex bg-slate-900/60 p-1 rounded-xl border border-slate-850 gap-1 w-full max-w-md">
                   <button
                     type="button"
-                    onClick={() => setInstallOsTab("windows")}
+                    onClick={() => setExtEnt("pronote")}
                     className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
-                      installOsTab === "windows"
-                        ? "bg-blue-600 text-white shadow-md"
-                        : "text-slate-400 hover:text-white"
+                      extEnt === "pronote" ? "bg-blue-600 text-white shadow-md" : "text-slate-400 hover:text-white"
                     }`}
                   >
-                    Windows
+                    Pronote
                   </button>
                   <button
                     type="button"
-                    onClick={() => setInstallOsTab("macos")}
+                    onClick={() => setExtEnt("ecoledirecte")}
                     className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
-                      installOsTab === "macos"
-                        ? "bg-blue-600 text-white shadow-md"
-                        : "text-slate-400 hover:text-white"
+                      extEnt === "ecoledirecte" ? "bg-blue-600 text-white shadow-md" : "text-slate-400 hover:text-white"
                     }`}
                   >
-                    macOS
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setInstallOsTab("linux")}
-                    className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
-                      installOsTab === "linux"
-                        ? "bg-blue-600 text-white shadow-md"
-                        : "text-slate-400 hover:text-white"
-                    }`}
-                  >
-                    Linux
+                    ÉcoleDirecte
                   </button>
                 </div>
 
-                {/* Main installation card for Windows */}
-                {installOsTab === "windows" && (
-                  <div className="space-y-5 animate-fadeIn">
+                <div className="flex bg-slate-900/60 p-1 rounded-xl border border-slate-850 gap-1 w-full max-w-xl">
+                  <button
+                    type="button"
+                    onClick={() => setInstallBrowserTab("chromium")}
+                    className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                      installBrowserTab === "chromium"
+                        ? "bg-blue-600 text-white shadow-md"
+                        : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    Chrome & Edge
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setInstallBrowserTab("firefox")}
+                    className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                      installBrowserTab === "firefox"
+                        ? "bg-blue-600 text-white shadow-md"
+                        : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    Firefox
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setInstallBrowserTab("safari")}
+                    className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                      installBrowserTab === "safari"
+                        ? "bg-blue-600 text-white shadow-md"
+                        : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    Safari
+                  </button>
+                </div>
+
+                {installBrowserTab === "chromium" && (
+                  <div className="space-y-5">
                     <div className="p-4 bg-blue-500/5 border border-blue-500/10 rounded-xl text-xs text-slate-300 flex items-start gap-3">
-                      <Terminal className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
+                      <Globe className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
                       <div>
-                        <span className="font-bold text-white block mb-0.5">Pourquoi utiliser la version portable ?</span>
-                        Cette méthode garantit que <strong className="text-white">rien n'est installé ou écrit sur le disque dur de l'ordinateur de l'école ou de votre bureau</strong>. Toutes vos bases de données et vos préférences restent en sécurité sur votre clé USB portable.
+                        <span className="font-bold text-white block mb-0.5">Chrome et Microsoft Edge</span>
+                        Même moteur (Chromium). Fichier {extPack.label} : <code className="text-blue-300 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">{extPack.chrome}</code> (dossier <code className="font-mono text-blue-300">/assets/{extPack.dir}/</code>).
                       </div>
                     </div>
-
-                    <div className="space-y-4">
-                      <h4 className="text-xs font-bold text-white uppercase tracking-wider text-slate-300">Étapes d'installation sur Windows</h4>
-                      
-                      <div className="space-y-3">
-                        {/* Step 1 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            1
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold text-xs">Préparation de la clé USB</p>
-                            <p className="text-xs text-slate-400 leading-relaxed">
-                              Copiez le fichier téléchargé <code className="text-blue-300 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">apprecIAtion_win.zip</code> sur une clé USB ou un support amovible performant (norme USB 2.0 ou idéalement USB 3.0/3.1). 
-                              <span className="block mt-1 text-[11px] text-amber-400/90 font-medium font-sans">
-                                💡 Note : L'espace disque requis est minime, mais la vitesse de transfert des données de votre clé est essentielle au parfait fonctionnement et à la rapidité du logiciel.
-                              </span>
-                            </p>
-                          </div>
+                    <div className="space-y-3 text-xs">
+                      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
+                        <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">1</span>
+                        <div className="space-y-1">
+                          <p className="text-white font-bold">Télécharger le paquet signé</p>
+                          <p className="text-slate-400 leading-relaxed">Onglet <strong className="text-slate-300">Téléchargements</strong> → fichier Chrome / Edge. Conservez-le (clé USB ou dossier personnel).</p>
                         </div>
-
-                        {/* Step 2 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            2
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold text-xs">Décompression des fichiers</p>
-                            <p className="text-xs text-slate-400 leading-relaxed">
-                              Faites un clic droit sur le fichier <code className="text-blue-300 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">apprecIAtion_win.zip</code> et sélectionnez <strong>"Extraire tout..."</strong> (ou utilisez un utilitaire comme 7-Zip/WinRAR) pour décompresser le dossier directement à la racine ou dans un dossier dédié de votre support amovible.
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Step 3 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            3
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold text-xs">Vérification de la structure du dossier</p>
-                            <p className="text-xs text-slate-400 leading-relaxed">
-                              Ouvrez le dossier extrait sur votre support amovible et vérifiez qu'il contient bien les deux éléments indispensables :
-                            </p>
-                            <div className="mt-2 bg-slate-950/80 p-3 rounded-lg border border-slate-900 font-mono text-[11px] text-slate-300 space-y-1">
-                              <p className="flex items-center gap-1.5"><span className="text-amber-500">📁 I3A_data</span> <span className="text-slate-500 font-sans text-xs">(Dossier contenant votre base de données locale)</span></p>
-                              <p className="flex items-center gap-1.5"><span className="text-emerald-500">⚙️ apprecIAtion.exe</span> <span className="text-slate-500 font-sans text-xs">(Le programme principal exécutable)</span></p>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Step 4 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            4
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold text-xs">Premier lancement</p>
-                            <p className="text-xs text-slate-400 leading-relaxed">
-                              Double-cliquez sur le fichier <code className="text-emerald-400 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">apprecIAtion.exe</code>. 
-                              <span className="block mt-1 text-slate-400">
-                                ⏳ Patientez environ <strong>10 secondes</strong> pendant le premier lancement du logiciel, le temps d'initialiser l'environnement sécurisé et les services locaux.
-                              </span>
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Step 5 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            5
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold text-xs">Utilisation 100% autonome et portable</p>
-                            <p className="text-xs text-slate-400 leading-relaxed font-light">
-                              Le logiciel est désormais totalement opérationnel et portable. Vous pouvez débrancher votre clé USB et la connecter sur n'importe quel autre poste Windows : votre espace de travail s'ouvrira instantanément avec toutes vos données intactes embarquées directement dans le dossier <code className="font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded text-blue-300">I3A_data</code>. <strong className="text-slate-300">Rien n'est écrit ou installé sur l'ordinateur hôte.</strong>
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Step 6 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            6
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold text-xs">Nettoyage final</p>
-                            <p className="text-xs text-slate-400 leading-relaxed">
-                              Pour libérer de l'espace sur votre clé USB, vous pouvez supprimer définitivement le fichier d'archive compressé <code className="text-slate-400 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">apprecIAtion_win.zip</code>.
-                            </p>
-                          </div>
-                        </div>
-
                       </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* macOS Guide */}
-                {installOsTab === "macos" && (
-                  <div className="space-y-5 animate-fadeIn">
-                    <div className="p-4 bg-blue-500/5 border border-blue-500/10 rounded-xl text-xs text-slate-300 flex items-start gap-3">
-                      <Terminal className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
-                      <div>
-                        <span className="font-bold text-white block mb-0.5">Compatibilité macOS</span>
-                        L'application macOS fonctionne à la fois sur les Mac équipés de processeurs Intel et Apple Silicon (M1/M2/M3).
+                      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
+                        <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">2</span>
+                        <div className="space-y-1">
+                          <p className="text-white font-bold">Ouvrir la page des extensions</p>
+                          <p className="text-slate-400 leading-relaxed">
+                            Chrome : barre d'adresse <code className="text-blue-300 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">chrome://extensions</code><br />
+                            Edge : <code className="text-blue-300 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">edge://extensions</code>
+                          </p>
+                        </div>
                       </div>
-                    </div>
-
-                    <div className="space-y-4">
-                      <h4 className="text-xs font-bold text-white uppercase tracking-wider text-slate-300">Étapes d'installation sur macOS</h4>
-                      
-                      <div className="space-y-3 text-xs">
-                        {/* Step 1 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            1
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold">Transfert sur clé USB</p>
-                            <p className="text-slate-400 leading-relaxed">
-                              Copiez l'archive <code className="text-blue-300 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">apprecIAtion_mac.zip</code> sur votre clé USB rapide (formatée en ExFAT pour être lisible sur Mac et Windows).
-                            </p>
-                          </div>
+                      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
+                        <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">3</span>
+                        <div className="space-y-1">
+                          <p className="text-white font-bold">Installer le fichier signé</p>
+                          <p className="text-slate-400 leading-relaxed">
+                            Glissez le <code className="font-mono text-blue-300">.crx</code> sur la page des extensions. S'il s'agit d'un <code className="font-mono text-blue-300">.zip</code> : décompressez-le, activez le <strong className="text-slate-300">mode développeur</strong> (en haut à droite), puis <strong className="text-slate-300">Charger l'extension non empaquetée</strong> et choisissez le dossier extrait.
+                          </p>
                         </div>
-
-                        {/* Step 2 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            2
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold">Extraction de l'application</p>
-                            <p className="text-slate-400 leading-relaxed">
-                              Double-cliquez sur le fichier <code className="text-blue-300 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">apprecIAtion_mac.zip</code> sur votre clé. L'utilitaire d'archive natif de macOS va extraire l'application.
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Step 3 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            3
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold">Vérification de la structure</p>
-                            <p className="text-slate-400 leading-relaxed font-light">
-                              Assurez-vous d'avoir les éléments suivants présents au même niveau :
-                            </p>
-                            <div className="mt-2 bg-slate-950/80 p-3 rounded-lg border border-slate-900 font-mono text-[11px] text-slate-300 space-y-1">
-                              <p className="flex items-center gap-1.5"><span className="text-amber-500">📁 I3A_data</span> <span className="text-slate-500 font-sans text-xs">(Dossier de base de données locales)</span></p>
-                              <p className="flex items-center gap-1.5"><span className="text-emerald-500">🖥️ apprecIAtion.app</span> <span className="text-slate-500 font-sans text-xs">(Le package d'application macOS)</span></p>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Step 4 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            4
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold">Premier lancement & Autorisation macOS</p>
-                            <p className="text-slate-400 leading-relaxed font-light">
-                              Double-cliquez sur l'application. 
-                              <span className="block mt-1 text-amber-400/95 font-medium font-sans">
-                                🔒 Sécurité Gatekeeper : Si macOS affiche un message indiquant que le développeur n'est pas identifié, faites un clic droit (ou Ctrl+clic) sur l'application, sélectionnez "Ouvrir", puis cliquez sur "Ouvrir" dans la fenêtre de dialogue pour confirmer l'autorisation. Cette étape n'est requise qu'au premier lancement.
-                              </span>
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Step 5 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            5
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold">Portabilité Apple</p>
-                            <p className="text-slate-400 leading-relaxed">
-                              L'application fonctionne en autonomie complète depuis le support amovible et écrit ses sauvegardes directement dans le dossier <code className="font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded text-blue-300">I3A_data</code> sur votre clé USB.
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Step 6 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            6
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold">Nettoyage</p>
-                            <p className="text-slate-400 leading-relaxed">
-                              Une fois extrait, vous pouvez supprimer le fichier <code className="text-slate-400 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">apprecIAtion_mac.zip</code>.
-                            </p>
-                          </div>
+                      </div>
+                      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
+                        <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">4</span>
+                        <div className="space-y-1">
+                          <p className="text-white font-bold">Épingler et utiliser</p>
+                          <p className="text-slate-400 leading-relaxed">Épinglez l'icône apprecIAtion. Ouvrez {extPack.label} : le volet de l'assistant apparaît. Rien n'est écrit sur le disque de l'établissement hors le profil du navigateur.</p>
                         </div>
                       </div>
                     </div>
                   </div>
                 )}
 
-                {/* Linux Guide */}
-                {installOsTab === "linux" && (
-                  <div className="space-y-5 animate-fadeIn">
+                {installBrowserTab === "firefox" && (
+                  <div className="space-y-5">
                     <div className="p-4 bg-blue-500/5 border border-blue-500/10 rounded-xl text-xs text-slate-300 flex items-start gap-3">
-                      <Terminal className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
+                      <Globe className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
                       <div>
-                        <span className="font-bold text-white block mb-0.5">Compatibilité Linux</span>
-                        Fonctionne de manière portable sur les distributions majeures (Ubuntu, Debian, Fedora, Mint, etc.).
+                        <span className="font-bold text-white block mb-0.5">Mozilla Firefox</span>
+                        Fichier signé Mozilla ({extPack.label}) : <code className="text-blue-300 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">{extPack.firefox}</code>.
                       </div>
                     </div>
-
-                    <div className="space-y-4">
-                      <h4 className="text-xs font-bold text-white uppercase tracking-wider text-slate-300">Étapes d'installation sur Linux</h4>
-                      
-                      <div className="space-y-3 text-xs">
-                        {/* Step 1 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            1
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold">Transfert sur clé USB</p>
-                            <p className="text-slate-400 leading-relaxed font-light">
-                              Copiez le package <code className="text-blue-300 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">apprecIAtion_linux.zip</code> sur votre clé USB.
-                            </p>
-                          </div>
+                    <div className="space-y-3 text-xs">
+                      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
+                        <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">1</span>
+                        <div className="space-y-1">
+                          <p className="text-white font-bold">Télécharger le .xpi</p>
+                          <p className="text-slate-400 leading-relaxed">Depuis Téléchargements, enregistrez <code className="font-mono text-blue-300">{extPack.firefox}</code>.</p>
                         </div>
-
-                        {/* Step 2 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            2
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold">Extraction</p>
-                            <p className="text-slate-400 leading-relaxed font-light">
-                              Décompressez l'archive à l'aide de votre gestionnaire d'archives ou en ligne de commande : <code className="font-mono text-[11px] bg-slate-950 px-1.5 py-0.5 rounded text-blue-300">unzip apprecIAtion_linux.zip</code>.
-                            </p>
-                          </div>
+                      </div>
+                      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
+                        <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">2</span>
+                        <div className="space-y-1">
+                          <p className="text-white font-bold">Ouvrir le gestionnaire de modules</p>
+                          <p className="text-slate-400 leading-relaxed">Barre d'adresse : <code className="text-blue-300 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">about:addons</code> — ou menu ☰ → Extensions et thèmes.</p>
                         </div>
-
-                        {/* Step 3 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            3
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold">Vérification des éléments</p>
-                            <p className="text-slate-400 leading-relaxed font-light">
-                              Assurez-vous de la présence du dossier de base de données locale <code className="font-mono text-amber-500 text-[11px]">I3A_data</code> et du binaire <code className="font-mono text-emerald-500 text-[11px]">apprecIAtion</code>.
-                            </p>
-                          </div>
+                      </div>
+                      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
+                        <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">3</span>
+                        <div className="space-y-1">
+                          <p className="text-white font-bold">Installer depuis un fichier</p>
+                          <p className="text-slate-400 leading-relaxed">
+                            Roue dentée → <strong className="text-slate-300">Installer un module depuis un fichier…</strong> → choisissez le <code className="font-mono text-blue-300">.xpi</code>.
+                            Vous pouvez aussi <strong className="text-slate-300">glisser-déposer</strong> le fichier sur la fenêtre Firefox. Confirmez « Ajouter ».
+                          </p>
                         </div>
-
-                        {/* Step 4 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            4
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold">Attribution des droits d'exécution & Lancement</p>
-                            <p className="text-slate-400 leading-relaxed font-light font-sans">
-                              Par défaut, le fichier binaire extrait peut ne pas avoir l'autorisation d'être exécuté. Ouvrez un terminal dans le dossier et tapez :
-                            </p>
-                            <div className="mt-2 bg-slate-950/80 p-3 rounded-lg border border-slate-900 font-mono text-[11px] text-blue-300 space-y-1">
-                              <p className="text-slate-500"># Rendre le programme exécutable</p>
-                              <p>chmod +x apprecIAtion</p>
-                              <p className="text-slate-500 mt-2"># Lancer l'application</p>
-                              <p>./apprecIAtion</p>
-                            </div>
-                          </div>
+                      </div>
+                      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
+                        <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">4</span>
+                        <div className="space-y-1">
+                          <p className="text-white font-bold">Autoriser et épingler</p>
+                          <p className="text-slate-400 leading-relaxed">Si Firefox demande des permissions, acceptez. Épinglez l'icône, puis ouvrez {extPack.label}.</p>
                         </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
-                        {/* Step 5 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            5
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold">Portabilité Linux</p>
-                            <p className="text-slate-400 leading-relaxed font-light">
-                              Toutes vos modifications de profils et clés d'API sont conservées dans le dossier local <code className="font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded text-blue-300">I3A_data</code> sans polluer le répertoire `/home` ou `/etc` de votre machine Linux hôte.
-                            </p>
-                          </div>
+                {installBrowserTab === "safari" && (
+                  <div className="space-y-5">
+                    <div className="p-4 bg-blue-500/5 border border-blue-500/10 rounded-xl text-xs text-slate-300 flex items-start gap-3">
+                      <Globe className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
+                      <div>
+                        <span className="font-bold text-white block mb-0.5">Safari (macOS)</span>
+                        Safari n'installe pas un zip brut : le paquet signé est une <strong className="text-white">app macOS</strong> (Safari Web Extension) à télécharger depuis Téléchargements, puis à activer dans Safari.
+                      </div>
+                    </div>
+                    <div className="space-y-3 text-xs">
+                      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
+                        <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">1</span>
+                        <div className="space-y-1">
+                          <p className="text-white font-bold">Télécharger le paquet Safari</p>
+                          <p className="text-slate-400 leading-relaxed">Fichier <code className="font-mono text-blue-300">{extPack.safari}</code>. Décompressez-le si besoin.</p>
                         </div>
-
-                        {/* Step 6 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            6
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold">Nettoyage</p>
-                            <p className="text-slate-400 leading-relaxed">
-                              Vous pouvez effacer le fichier d'archive <code className="text-slate-400 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">apprecIAtion_linux.zip</code> pour gagner de l'espace sur la clé USB.
-                            </p>
-                          </div>
+                      </div>
+                      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
+                        <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">2</span>
+                        <div className="space-y-1">
+                          <p className="text-white font-bold">Ouvrir l'app une première fois</p>
+                          <p className="text-slate-400 leading-relaxed">Double-cliquez l'application. Si macOS affiche Gatekeeper : clic droit → Ouvrir. Cette étape enregistre l'extension auprès de Safari.</p>
+                        </div>
+                      </div>
+                      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
+                        <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">3</span>
+                        <div className="space-y-1">
+                          <p className="text-white font-bold">Activer dans Safari</p>
+                          <p className="text-slate-400 leading-relaxed">
+                            Safari → Réglages → <strong className="text-slate-300">Extensions</strong> → cochez apprecIAtion.
+                            Au besoin : Réglages → Avancé → « Afficher les fonctionnalités pour les développeurs web », puis menu Développement → Autoriser les extensions non classées (uniquement si le paquet n'est pas encore notarié).
+                          </p>
+                        </div>
+                      </div>
+                      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
+                        <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">4</span>
+                        <div className="space-y-1">
+                          <p className="text-white font-bold">Utiliser sur {extPack.label}</p>
+                          <p className="text-slate-400 leading-relaxed">Rechargez l'onglet {extPack.label}. L'icône apparaît dans la barre d'outils Safari.</p>
                         </div>
                       </div>
                     </div>
