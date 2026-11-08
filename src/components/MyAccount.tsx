@@ -2347,104 +2347,78 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
             )}
 
             {/* =========================================================================
-               TAB 3: EXCLUSIVE DOWNLOAD LINKS
+               TAB 3: TÉLÉCHARGEMENTS EXTENSIONS SIGNÉES
                ========================================================================= */}
             {activeTab === "downloads" && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-base font-bold text-white font-display">Téléchargement des applications apprecIAtion</h3>
+                  <h3 className="text-base font-bold text-white font-display">Téléchargement de l'extension</h3>
                   <p className="text-xs text-slate-400 mt-1">
-                    Récupérez l'installeur ou le binaire de bureau d'apprecIAtion prêt à l'emploi. Pour rappel, votre système d'exploitation par défaut configuré est <span className="capitalize text-blue-400 font-bold">{user.systeme_exploitation}</span>.
+                    Paquets <strong className="text-slate-300">signés</strong>, à installer ensuite via l'onglet Installation de l'extension. Pas de magasin, pas d'application Windows / Mac / Linux.
                   </p>
                 </div>
 
-                {/* Main recommended package card */}
-                <div className="p-5 bg-slate-900/80 rounded-2xl border border-indigo-500/20 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 blur-2xl rounded-full" />
-                  
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 bg-blue-500/10 rounded-xl text-blue-400 border border-blue-500/20">
-                      <Laptop className="w-8 h-8" />
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="bg-slate-900/40 p-4 rounded-xl border border-slate-850 flex flex-col justify-between space-y-3">
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-400 mb-1">Chrome & Edge</p>
+                      <p className="text-xs font-bold text-white">Paquet Chromium</p>
+                      <p className="text-[10px] text-slate-500 font-mono mt-1">apprecIAtion-chrome.zip</p>
+                      <p className="text-[11px] text-slate-400 mt-2 leading-relaxed">Fichier .zip (ou .crx signé). À charger depuis chrome://extensions ou edge://extensions.</p>
                     </div>
-                    <div className="text-left space-y-1">
-                      <span className="text-[10px] bg-indigo-500/10 text-indigo-400 px-2 py-0.5 rounded border border-indigo-500/20 font-bold uppercase tracking-wider">
-                        Recommandé pour vous
-                      </span>
-                      <h4 className="text-sm font-bold text-white uppercase tracking-wider">
-                        Version {user.systeme_exploitation === "windows" ? "Windows (Binaire .zip)" : user.systeme_exploitation === "macos" ? "macOS (Mac App .zip)" : "Linux (.zip)"}
-                      </h4>
-                      <p className="text-[11px] text-slate-400 leading-relaxed">
-                        Fichier : <span className="font-mono text-blue-300">{user.systeme_exploitation === "windows" ? "apprecIAtion_win.zip" : user.systeme_exploitation === "macos" ? "apprecIAtion_mac.zip" : "apprecIAtion_linux.zip"}</span>
-                      </p>
-                    </div>
+                    <a
+                      href="/assets/apprecIAtion-chrome.zip"
+                      download="apprecIAtion-chrome.zip"
+                      className="w-full bg-slate-950 hover:bg-slate-900 text-slate-300 hover:text-white border border-slate-850 hover:border-slate-800 p-2 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>Télécharger</span>
+                    </a>
                   </div>
 
-                  <a
-                    href={user.systeme_exploitation === "windows" ? "/assets/apprecIAtion_win.zip" : user.systeme_exploitation === "macos" ? "/assets/apprecIAtion_mac.zip" : "/assets/apprecIAtion_linux.zip"}
-                    download={user.systeme_exploitation === "windows" ? "apprecIAtion_win.zip" : user.systeme_exploitation === "macos" ? "apprecIAtion_mac.zip" : "apprecIAtion_linux.zip"}
-                    className="w-full md:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs px-6 py-3 rounded-lg shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <Download className="w-4 h-4 shrink-0" />
-                    <span>Télécharger ({user.systeme_exploitation === "windows" ? "Windows" : user.systeme_exploitation === "macos" ? "macOS" : "Linux"})</span>
-                  </a>
-                </div>
-
-                {/* Other systems downloads */}
-                <div className="space-y-3 pt-2">
-                  <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Tous nos installeurs disponibles</h4>
-                  
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    
-                    {/* Windows package */}
-                    <div className="bg-slate-900/40 p-4 rounded-xl border border-slate-850 flex flex-col justify-between items-start space-y-3">
-                      <div>
-                        <p className="text-xs font-bold text-white">Windows (10 / 11)</p>
-                        <p className="text-[10px] text-slate-500 font-mono mt-1">apprecIAtion_win.zip</p>
-                      </div>
-                      <a
-                        href="/assets/apprecIAtion_win.zip"
-                        download="apprecIAtion_win.zip"
-                        className="w-full bg-slate-950 hover:bg-slate-900 text-slate-300 hover:text-white border border-slate-850 hover:border-slate-800 p-2 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-                      >
-                        <Download className="w-3.5 h-3.5" />
-                        <span>Télécharger .zip</span>
-                      </a>
+                  <div className="bg-slate-900/40 p-4 rounded-xl border border-slate-850 flex flex-col justify-between space-y-3">
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-400 mb-1">Firefox</p>
+                      <p className="text-xs font-bold text-white">Module signé Mozilla</p>
+                      <p className="text-[10px] text-slate-500 font-mono mt-1">apprecIAtion.xpi</p>
+                      <p className="text-[11px] text-slate-400 mt-2 leading-relaxed">Glisser-déposer sur Firefox, ou about:addons → installer depuis un fichier.</p>
                     </div>
+                    <a
+                      href="/assets/apprecIAtion.xpi"
+                      download="apprecIAtion.xpi"
+                      className="w-full bg-slate-950 hover:bg-slate-900 text-slate-300 hover:text-white border border-slate-850 hover:border-slate-800 p-2 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>Télécharger</span>
+                    </a>
+                  </div>
 
-                    {/* macOS package */}
-                    <div className="bg-slate-900/40 p-4 rounded-xl border border-slate-850 flex flex-col justify-between items-start space-y-3">
-                      <div>
-                        <p className="text-xs font-bold text-white">macOS (Intel & Silicon)</p>
-                        <p className="text-[10px] text-slate-500 font-mono mt-1">apprecIAtion_mac.zip</p>
-                      </div>
-                      <a
-                        href="/assets/apprecIAtion_mac.zip"
-                        download="apprecIAtion_mac.zip"
-                        className="w-full bg-slate-950 hover:bg-slate-900 text-slate-300 hover:text-white border border-slate-850 hover:border-slate-800 p-2 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-                      >
-                        <Download className="w-3.5 h-3.5" />
-                        <span>Télécharger .zip</span>
-                      </a>
+                  <div className="bg-slate-900/40 p-4 rounded-xl border border-slate-850 flex flex-col justify-between space-y-3">
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-400 mb-1">Safari</p>
+                      <p className="text-xs font-bold text-white">Safari Web Extension</p>
+                      <p className="text-[10px] text-slate-500 font-mono mt-1">apprecIAtion.safariwebextension.zip</p>
+                      <p className="text-[11px] text-slate-400 mt-2 leading-relaxed">Décompresser, ouvrir l'app une fois, puis cocher l'extension dans Safari → Réglages.</p>
                     </div>
-
-                    {/* Linux package */}
-                    <div className="bg-slate-900/40 p-4 rounded-xl border border-slate-850 flex flex-col justify-between items-start space-y-3">
-                      <div>
-                        <p className="text-xs font-bold text-white">Linux (Debian / Ubuntu)</p>
-                        <p className="text-[10px] text-slate-500 font-mono mt-1">apprecIAtion_linux.zip</p>
-                      </div>
-                      <a
-                        href="/assets/apprecIAtion_linux.zip"
-                        download="apprecIAtion_linux.zip"
-                        className="w-full bg-slate-950 hover:bg-slate-900 text-slate-300 hover:text-white border border-slate-850 hover:border-slate-800 p-2 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-                      >
-                        <Download className="w-3.5 h-3.5" />
-                        <span>Télécharger .zip</span>
-                      </a>
-                    </div>
-
+                    <a
+                      href="/assets/apprecIAtion.safariwebextension.zip"
+                      download="apprecIAtion.safariwebextension.zip"
+                      className="w-full bg-slate-950 hover:bg-slate-900 text-slate-300 hover:text-white border border-slate-850 hover:border-slate-800 p-2 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>Télécharger</span>
+                    </a>
                   </div>
                 </div>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("installation")}
+                  className="text-xs text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1 cursor-pointer bg-transparent border-none p-0"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                  Voir le protocole d'installation
+                </button>
               </div>
             )}
 
