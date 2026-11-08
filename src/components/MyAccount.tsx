@@ -122,18 +122,7 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
   // Active dashboard tab state
   const [activeTab, setActiveTab] = useState<"profile" | "entLink" | "downloads" | "installation" | "database">("profile");
 
-  // Active installation tab OS state
-  const [installOsTab, setInstallOsTab] = useState<"windows" | "macos" | "linux">("windows");
-
-  // Sync installOsTab when user's OS is loaded/changed
-  React.useEffect(() => {
-    if (user && user.systeme_exploitation) {
-      const os = user.systeme_exploitation.toLowerCase();
-      if (os === "windows" || os === "macos" || os === "linux") {
-        setInstallOsTab(os as "windows" | "macos" | "linux");
-      }
-    }
-  }, [user]);
+  const [installBrowserTab, setInstallBrowserTab] = useState<"chromium" | "firefox" | "safari">("chromium");
 
   // Sync state if user changes
   React.useEffect(() => {
@@ -1700,7 +1689,7 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
                 }`}
               >
                 <Monitor className="w-4 h-4 shrink-0" />
-                <span>Installation du logiciel</span>
+                <span>Installation de l'extension</span>
               </button>
 
               <button
@@ -2460,363 +2449,184 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
             )}
 
             {/* =========================================================================
-               TAB 3.5: INSTALLATION INSTRUCTIONS (PORTABLE VERSION GUIDE)
+               TAB 3.5: INSTALLATION DE L'EXTENSION (SIDELLOAD SIGNÉ)
                ========================================================================= */}
             {activeTab === "installation" && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-base font-bold text-white font-display">Guide d'installation et de portabilité</h3>
+                  <h3 className="text-base font-bold text-white font-display">Installation de l'extension</h3>
                   <p className="text-xs text-slate-400 mt-1">
-                    apprecIAtion est un logiciel autonome et entièrement portable. Apprenez comment le configurer pour travailler directement depuis une clé USB sur n'importe quel ordinateur, sans aucune installation locale requise.
+                    apprecIAtion s'installe comme une <strong className="text-slate-300">extension de navigateur signée</strong>, téléchargeable depuis l'onglet Téléchargements. Aucun logiciel Windows / macOS / Linux, aucun magasin d'extensions payant.
                   </p>
                 </div>
 
-                {/* OS Switcher */}
-                <div className="flex bg-slate-900/60 p-1 rounded-xl border border-slate-850 gap-1 w-full max-w-md">
+                <div className="flex bg-slate-900/60 p-1 rounded-xl border border-slate-850 gap-1 w-full max-w-xl">
                   <button
                     type="button"
-                    onClick={() => setInstallOsTab("windows")}
+                    onClick={() => setInstallBrowserTab("chromium")}
                     className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
-                      installOsTab === "windows"
+                      installBrowserTab === "chromium"
                         ? "bg-blue-600 text-white shadow-md"
                         : "text-slate-400 hover:text-white"
                     }`}
                   >
-                    Windows
+                    Chrome & Edge
                   </button>
                   <button
                     type="button"
-                    onClick={() => setInstallOsTab("macos")}
+                    onClick={() => setInstallBrowserTab("firefox")}
                     className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
-                      installOsTab === "macos"
+                      installBrowserTab === "firefox"
                         ? "bg-blue-600 text-white shadow-md"
                         : "text-slate-400 hover:text-white"
                     }`}
                   >
-                    macOS
+                    Firefox
                   </button>
                   <button
                     type="button"
-                    onClick={() => setInstallOsTab("linux")}
+                    onClick={() => setInstallBrowserTab("safari")}
                     className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
-                      installOsTab === "linux"
+                      installBrowserTab === "safari"
                         ? "bg-blue-600 text-white shadow-md"
                         : "text-slate-400 hover:text-white"
                     }`}
                   >
-                    Linux
+                    Safari
                   </button>
                 </div>
 
-                {/* Main installation card for Windows */}
-                {installOsTab === "windows" && (
-                  <div className="space-y-5 animate-fadeIn">
+                {installBrowserTab === "chromium" && (
+                  <div className="space-y-5">
                     <div className="p-4 bg-blue-500/5 border border-blue-500/10 rounded-xl text-xs text-slate-300 flex items-start gap-3">
-                      <Terminal className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
+                      <Globe className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
                       <div>
-                        <span className="font-bold text-white block mb-0.5">Pourquoi utiliser la version portable ?</span>
-                        Cette méthode garantit que <strong className="text-white">rien n'est installé ou écrit sur le disque dur de l'ordinateur de l'école ou de votre bureau</strong>. Toutes vos bases de données et vos préférences restent en sécurité sur votre clé USB portable.
+                        <span className="font-bold text-white block mb-0.5">Chrome et Microsoft Edge</span>
+                        Même moteur (Chromium). Fichier : <code className="text-blue-300 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">apprecIAtion-chrome.zip</code> ou <code className="text-blue-300 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">.crx</code> signé, depuis Téléchargements.
                       </div>
                     </div>
-
-                    <div className="space-y-4">
-                      <h4 className="text-xs font-bold text-white uppercase tracking-wider text-slate-300">Étapes d'installation sur Windows</h4>
-                      
-                      <div className="space-y-3">
-                        {/* Step 1 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            1
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold text-xs">Préparation de la clé USB</p>
-                            <p className="text-xs text-slate-400 leading-relaxed">
-                              Copiez le fichier téléchargé <code className="text-blue-300 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">apprecIAtion_win.zip</code> sur une clé USB ou un support amovible performant (norme USB 2.0 ou idéalement USB 3.0/3.1). 
-                              <span className="block mt-1 text-[11px] text-amber-400/90 font-medium font-sans">
-                                💡 Note : L'espace disque requis est minime, mais la vitesse de transfert des données de votre clé est essentielle au parfait fonctionnement et à la rapidité du logiciel.
-                              </span>
-                            </p>
-                          </div>
+                    <div className="space-y-3 text-xs">
+                      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
+                        <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">1</span>
+                        <div className="space-y-1">
+                          <p className="text-white font-bold">Télécharger le paquet signé</p>
+                          <p className="text-slate-400 leading-relaxed">Onglet <strong className="text-slate-300">Téléchargements</strong> → fichier Chrome / Edge. Conservez-le (clé USB ou dossier personnel).</p>
                         </div>
-
-                        {/* Step 2 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            2
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold text-xs">Décompression des fichiers</p>
-                            <p className="text-xs text-slate-400 leading-relaxed">
-                              Faites un clic droit sur le fichier <code className="text-blue-300 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">apprecIAtion_win.zip</code> et sélectionnez <strong>"Extraire tout..."</strong> (ou utilisez un utilitaire comme 7-Zip/WinRAR) pour décompresser le dossier directement à la racine ou dans un dossier dédié de votre support amovible.
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Step 3 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            3
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold text-xs">Vérification de la structure du dossier</p>
-                            <p className="text-xs text-slate-400 leading-relaxed">
-                              Ouvrez le dossier extrait sur votre support amovible et vérifiez qu'il contient bien les deux éléments indispensables :
-                            </p>
-                            <div className="mt-2 bg-slate-950/80 p-3 rounded-lg border border-slate-900 font-mono text-[11px] text-slate-300 space-y-1">
-                              <p className="flex items-center gap-1.5"><span className="text-amber-500">📁 I3A_data</span> <span className="text-slate-500 font-sans text-xs">(Dossier contenant votre base de données locale)</span></p>
-                              <p className="flex items-center gap-1.5"><span className="text-emerald-500">⚙️ apprecIAtion.exe</span> <span className="text-slate-500 font-sans text-xs">(Le programme principal exécutable)</span></p>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Step 4 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            4
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold text-xs">Premier lancement</p>
-                            <p className="text-xs text-slate-400 leading-relaxed">
-                              Double-cliquez sur le fichier <code className="text-emerald-400 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">apprecIAtion.exe</code>. 
-                              <span className="block mt-1 text-slate-400">
-                                ⏳ Patientez environ <strong>10 secondes</strong> pendant le premier lancement du logiciel, le temps d'initialiser l'environnement sécurisé et les services locaux.
-                              </span>
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Step 5 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            5
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold text-xs">Utilisation 100% autonome et portable</p>
-                            <p className="text-xs text-slate-400 leading-relaxed font-light">
-                              Le logiciel est désormais totalement opérationnel et portable. Vous pouvez débrancher votre clé USB et la connecter sur n'importe quel autre poste Windows : votre espace de travail s'ouvrira instantanément avec toutes vos données intactes embarquées directement dans le dossier <code className="font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded text-blue-300">I3A_data</code>. <strong className="text-slate-300">Rien n'est écrit ou installé sur l'ordinateur hôte.</strong>
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Step 6 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            6
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold text-xs">Nettoyage final</p>
-                            <p className="text-xs text-slate-400 leading-relaxed">
-                              Pour libérer de l'espace sur votre clé USB, vous pouvez supprimer définitivement le fichier d'archive compressé <code className="text-slate-400 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">apprecIAtion_win.zip</code>.
-                            </p>
-                          </div>
-                        </div>
-
                       </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* macOS Guide */}
-                {installOsTab === "macos" && (
-                  <div className="space-y-5 animate-fadeIn">
-                    <div className="p-4 bg-blue-500/5 border border-blue-500/10 rounded-xl text-xs text-slate-300 flex items-start gap-3">
-                      <Terminal className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
-                      <div>
-                        <span className="font-bold text-white block mb-0.5">Compatibilité macOS</span>
-                        L'application macOS fonctionne à la fois sur les Mac équipés de processeurs Intel et Apple Silicon (M1/M2/M3).
+                      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
+                        <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">2</span>
+                        <div className="space-y-1">
+                          <p className="text-white font-bold">Ouvrir la page des extensions</p>
+                          <p className="text-slate-400 leading-relaxed">
+                            Chrome : barre d'adresse <code className="text-blue-300 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">chrome://extensions</code><br />
+                            Edge : <code className="text-blue-300 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">edge://extensions</code>
+                          </p>
+                        </div>
                       </div>
-                    </div>
-
-                    <div className="space-y-4">
-                      <h4 className="text-xs font-bold text-white uppercase tracking-wider text-slate-300">Étapes d'installation sur macOS</h4>
-                      
-                      <div className="space-y-3 text-xs">
-                        {/* Step 1 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            1
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold">Transfert sur clé USB</p>
-                            <p className="text-slate-400 leading-relaxed">
-                              Copiez l'archive <code className="text-blue-300 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">apprecIAtion_mac.zip</code> sur votre clé USB rapide (formatée en ExFAT pour être lisible sur Mac et Windows).
-                            </p>
-                          </div>
+                      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
+                        <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">3</span>
+                        <div className="space-y-1">
+                          <p className="text-white font-bold">Installer le fichier signé</p>
+                          <p className="text-slate-400 leading-relaxed">
+                            Glissez le <code className="font-mono text-blue-300">.crx</code> sur la page des extensions. S'il s'agit d'un <code className="font-mono text-blue-300">.zip</code> : décompressez-le, activez le <strong className="text-slate-300">mode développeur</strong> (en haut à droite), puis <strong className="text-slate-300">Charger l'extension non empaquetée</strong> et choisissez le dossier extrait.
+                          </p>
                         </div>
-
-                        {/* Step 2 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            2
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold">Extraction de l'application</p>
-                            <p className="text-slate-400 leading-relaxed">
-                              Double-cliquez sur le fichier <code className="text-blue-300 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">apprecIAtion_mac.zip</code> sur votre clé. L'utilitaire d'archive natif de macOS va extraire l'application.
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Step 3 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            3
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold">Vérification de la structure</p>
-                            <p className="text-slate-400 leading-relaxed font-light">
-                              Assurez-vous d'avoir les éléments suivants présents au même niveau :
-                            </p>
-                            <div className="mt-2 bg-slate-950/80 p-3 rounded-lg border border-slate-900 font-mono text-[11px] text-slate-300 space-y-1">
-                              <p className="flex items-center gap-1.5"><span className="text-amber-500">📁 I3A_data</span> <span className="text-slate-500 font-sans text-xs">(Dossier de base de données locales)</span></p>
-                              <p className="flex items-center gap-1.5"><span className="text-emerald-500">🖥️ apprecIAtion.app</span> <span className="text-slate-500 font-sans text-xs">(Le package d'application macOS)</span></p>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Step 4 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            4
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold">Premier lancement & Autorisation macOS</p>
-                            <p className="text-slate-400 leading-relaxed font-light">
-                              Double-cliquez sur l'application. 
-                              <span className="block mt-1 text-amber-400/95 font-medium font-sans">
-                                🔒 Sécurité Gatekeeper : Si macOS affiche un message indiquant que le développeur n'est pas identifié, faites un clic droit (ou Ctrl+clic) sur l'application, sélectionnez "Ouvrir", puis cliquez sur "Ouvrir" dans la fenêtre de dialogue pour confirmer l'autorisation. Cette étape n'est requise qu'au premier lancement.
-                              </span>
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Step 5 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            5
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold">Portabilité Apple</p>
-                            <p className="text-slate-400 leading-relaxed">
-                              L'application fonctionne en autonomie complète depuis le support amovible et écrit ses sauvegardes directement dans le dossier <code className="font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded text-blue-300">I3A_data</code> sur votre clé USB.
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Step 6 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            6
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold">Nettoyage</p>
-                            <p className="text-slate-400 leading-relaxed">
-                              Une fois extrait, vous pouvez supprimer le fichier <code className="text-slate-400 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">apprecIAtion_mac.zip</code>.
-                            </p>
-                          </div>
+                      </div>
+                      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
+                        <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">4</span>
+                        <div className="space-y-1">
+                          <p className="text-white font-bold">Épingler et utiliser</p>
+                          <p className="text-slate-400 leading-relaxed">Épinglez l'icône apprecIAtion à droite de la barre d'adresse. Ouvrez ÉcoleDirecte : le volet de l'assistant apparaît. Rien n'est écrit sur le disque de l'établissement hors le profil du navigateur.</p>
                         </div>
                       </div>
                     </div>
                   </div>
                 )}
 
-                {/* Linux Guide */}
-                {installOsTab === "linux" && (
-                  <div className="space-y-5 animate-fadeIn">
+                {installBrowserTab === "firefox" && (
+                  <div className="space-y-5">
                     <div className="p-4 bg-blue-500/5 border border-blue-500/10 rounded-xl text-xs text-slate-300 flex items-start gap-3">
-                      <Terminal className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
+                      <Globe className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
                       <div>
-                        <span className="font-bold text-white block mb-0.5">Compatibilité Linux</span>
-                        Fonctionne de manière portable sur les distributions majeures (Ubuntu, Debian, Fedora, Mint, etc.).
+                        <span className="font-bold text-white block mb-0.5">Mozilla Firefox</span>
+                        Fichier signé Mozilla : <code className="text-blue-300 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">apprecIAtion.xpi</code> (onglet Téléchargements).
                       </div>
                     </div>
-
-                    <div className="space-y-4">
-                      <h4 className="text-xs font-bold text-white uppercase tracking-wider text-slate-300">Étapes d'installation sur Linux</h4>
-                      
-                      <div className="space-y-3 text-xs">
-                        {/* Step 1 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            1
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold">Transfert sur clé USB</p>
-                            <p className="text-slate-400 leading-relaxed font-light">
-                              Copiez le package <code className="text-blue-300 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">apprecIAtion_linux.zip</code> sur votre clé USB.
-                            </p>
-                          </div>
+                    <div className="space-y-3 text-xs">
+                      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
+                        <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">1</span>
+                        <div className="space-y-1">
+                          <p className="text-white font-bold">Télécharger le .xpi</p>
+                          <p className="text-slate-400 leading-relaxed">Depuis Téléchargements, enregistrez <code className="font-mono text-blue-300">apprecIAtion.xpi</code> (ne l'ouvrez pas encore dans un autre logiciel).</p>
                         </div>
-
-                        {/* Step 2 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            2
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold">Extraction</p>
-                            <p className="text-slate-400 leading-relaxed font-light">
-                              Décompressez l'archive à l'aide de votre gestionnaire d'archives ou en ligne de commande : <code className="font-mono text-[11px] bg-slate-950 px-1.5 py-0.5 rounded text-blue-300">unzip apprecIAtion_linux.zip</code>.
-                            </p>
-                          </div>
+                      </div>
+                      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
+                        <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">2</span>
+                        <div className="space-y-1">
+                          <p className="text-white font-bold">Ouvrir le gestionnaire de modules</p>
+                          <p className="text-slate-400 leading-relaxed">Barre d'adresse : <code className="text-blue-300 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">about:addons</code> — ou menu ☰ → Extensions et thèmes.</p>
                         </div>
-
-                        {/* Step 3 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            3
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold">Vérification des éléments</p>
-                            <p className="text-slate-400 leading-relaxed font-light">
-                              Assurez-vous de la présence du dossier de base de données locale <code className="font-mono text-amber-500 text-[11px]">I3A_data</code> et du binaire <code className="font-mono text-emerald-500 text-[11px]">apprecIAtion</code>.
-                            </p>
-                          </div>
+                      </div>
+                      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
+                        <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">3</span>
+                        <div className="space-y-1">
+                          <p className="text-white font-bold">Installer depuis un fichier</p>
+                          <p className="text-slate-400 leading-relaxed">
+                            Roue dentée → <strong className="text-slate-300">Installer un module depuis un fichier…</strong> → choisissez le <code className="font-mono text-blue-300">.xpi</code>.
+                            Vous pouvez aussi <strong className="text-slate-300">glisser-déposer</strong> le fichier sur la fenêtre Firefox. Confirmez « Ajouter ».
+                          </p>
                         </div>
-
-                        {/* Step 4 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            4
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold">Attribution des droits d'exécution & Lancement</p>
-                            <p className="text-slate-400 leading-relaxed font-light font-sans">
-                              Par défaut, le fichier binaire extrait peut ne pas avoir l'autorisation d'être exécuté. Ouvrez un terminal dans le dossier et tapez :
-                            </p>
-                            <div className="mt-2 bg-slate-950/80 p-3 rounded-lg border border-slate-900 font-mono text-[11px] text-blue-300 space-y-1">
-                              <p className="text-slate-500"># Rendre le programme exécutable</p>
-                              <p>chmod +x apprecIAtion</p>
-                              <p className="text-slate-500 mt-2"># Lancer l'application</p>
-                              <p>./apprecIAtion</p>
-                            </div>
-                          </div>
+                      </div>
+                      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
+                        <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">4</span>
+                        <div className="space-y-1">
+                          <p className="text-white font-bold">Autoriser et épingler</p>
+                          <p className="text-slate-400 leading-relaxed">Si Firefox demande des permissions, acceptez. Épinglez l'icône, puis ouvrez ÉcoleDirecte.</p>
                         </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
-                        {/* Step 5 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            5
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold">Portabilité Linux</p>
-                            <p className="text-slate-400 leading-relaxed font-light">
-                              Toutes vos modifications de profils et clés d'API sont conservées dans le dossier local <code className="font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded text-blue-300">I3A_data</code> sans polluer le répertoire `/home` ou `/etc` de votre machine Linux hôte.
-                            </p>
-                          </div>
+                {installBrowserTab === "safari" && (
+                  <div className="space-y-5">
+                    <div className="p-4 bg-blue-500/5 border border-blue-500/10 rounded-xl text-xs text-slate-300 flex items-start gap-3">
+                      <Globe className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
+                      <div>
+                        <span className="font-bold text-white block mb-0.5">Safari (macOS)</span>
+                        Safari n'installe pas un zip brut : le paquet signé est une <strong className="text-white">app macOS</strong> (Safari Web Extension) à télécharger depuis Téléchargements, puis à activer dans Safari.
+                      </div>
+                    </div>
+                    <div className="space-y-3 text-xs">
+                      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
+                        <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">1</span>
+                        <div className="space-y-1">
+                          <p className="text-white font-bold">Télécharger le paquet Safari</p>
+                          <p className="text-slate-400 leading-relaxed">Fichier du type <code className="font-mono text-blue-300">apprecIAtion.safariwebextension.zip</code> (ou l'app signée). Décompressez-le si besoin.</p>
                         </div>
-
-                        {/* Step 6 */}
-                        <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                          <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0 text-xs">
-                            6
-                          </span>
-                          <div className="space-y-1">
-                            <p className="text-white font-bold">Nettoyage</p>
-                            <p className="text-slate-400 leading-relaxed">
-                              Vous pouvez effacer le fichier d'archive <code className="text-slate-400 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">apprecIAtion_linux.zip</code> pour gagner de l'espace sur la clé USB.
-                            </p>
-                          </div>
+                      </div>
+                      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
+                        <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">2</span>
+                        <div className="space-y-1">
+                          <p className="text-white font-bold">Ouvrir l'app une première fois</p>
+                          <p className="text-slate-400 leading-relaxed">Double-cliquez l'application. Si macOS affiche Gatekeeper : clic droit → Ouvrir. Cette étape enregistre l'extension auprès de Safari.</p>
+                        </div>
+                      </div>
+                      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
+                        <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">3</span>
+                        <div className="space-y-1">
+                          <p className="text-white font-bold">Activer dans Safari</p>
+                          <p className="text-slate-400 leading-relaxed">
+                            Safari → Réglages → <strong className="text-slate-300">Extensions</strong> → cochez apprecIAtion.
+                            Au besoin : Réglages → Avancé → « Afficher les fonctionnalités pour les développeurs web », puis menu Développement → Autoriser les extensions non classées (uniquement si le paquet n'est pas encore notarié).
+                          </p>
+                        </div>
+                      </div>
+                      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
+                        <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">4</span>
+                        <div className="space-y-1">
+                          <p className="text-white font-bold">Utiliser sur ÉcoleDirecte</p>
+                          <p className="text-slate-400 leading-relaxed">Rechargez l'onglet ÉcoleDirecte. L'icône apparaît dans la barre d'outils Safari.</p>
                         </div>
                       </div>
                     </div>
