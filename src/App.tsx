@@ -121,7 +121,7 @@ export default function App() {
                 {/* French sovereign tag */}
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20 uppercase tracking-wider mb-2">
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                  Conçu pour l'École Directe · Aucune identité d'élève transmise
+                  Conçu pour École Directe · Aucune identité d'élève transmise
                 </div>
 
                 {/* Main Heading */}
