@@ -4,7 +4,7 @@ import Logo from "./components/Logo";
 import Pricing from "./components/Pricing";
 import Footer from "./components/Footer";
 import MyAccount from "./components/MyAccount";
-import { FAQS, TESTIMONIALS } from "./data";
+import { FAQS } from "./data";
 import { getSession, saveSession, clearSession, touchSession } from "./utils/session";
 import { 
   ShieldCheck, 
@@ -121,7 +121,7 @@ export default function App() {
                 {/* French sovereign tag */}
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20 uppercase tracking-wider mb-2">
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                  Conforme RGPD & Mistral AI
+                  Conçu pour École Directe · Aucune identité d'élève transmise
                 </div>
 
                 {/* Main Heading */}
@@ -134,26 +134,26 @@ export default function App() {
 
                 {/* Subtitle */}
                 <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto lg:mx-0 leading-relaxed font-light">
-                  apprecIAtion est le premier assistant logiciel souverain conçu pour les enseignants. Rédigez des appréciations de matières et des synthèses de professeur principal personnalisées, variées et impeccables grâce à l'IA française Mistral.
+                  apprecIAtion aide les enseignants à rédiger leurs appréciations de matières et leurs synthèses de professeur principal. Trois propositions par élève, un texte que vous relisez et validez — et aucun nom d'élève qui quitte votre navigateur.
                 </p>
 
                 {/* Key features checklist */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 text-sm text-slate-300 max-w-md mx-auto lg:mx-0">
                   <div className="flex items-center gap-2 justify-center lg:justify-start">
                     <CheckCircle className="w-4.5 h-4.5 text-emerald-400 shrink-0" />
-                    <span>Conformité RGPD absolue</span>
+                    <span>Aucun nom d'élève transmis : le prénom lui-même est pseudonymisé</span>
                   </div>
                   <div className="flex items-center gap-2 justify-center lg:justify-start">
                     <CheckCircle className="w-4.5 h-4.5 text-emerald-400 shrink-0" />
-                    <span>Copier-coller intelligent Pronote</span>
+                    <span>Pensé pour École Directe · Pronote : bientôt</span>
                   </div>
                   <div className="flex items-center gap-2 justify-center lg:justify-start">
                     <CheckCircle className="w-4.5 h-4.5 text-emerald-400 shrink-0" />
-                    <span>Propulsé par Mistral AI (France)</span>
+                    <span>Reformulation par l'IA française Mistral AI</span>
                   </div>
                   <div className="flex items-center gap-2 justify-center lg:justify-start">
                     <CheckCircle className="w-4.5 h-4.5 text-emerald-400 shrink-0" />
-                    <span>Intégration macOS, Win & Linux</span>
+                    <span>Extension Firefox, Chrome, Edge et Safari — Windows, macOS, Linux</span>
                   </div>
                 </div>
 
@@ -164,14 +164,14 @@ export default function App() {
                     className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm px-8 py-3.5 rounded-xl transition-all duration-300 shadow-xl shadow-blue-500/10 hover:shadow-blue-500/20 hover:-translate-y-0.5 cursor-pointer"
                   >
                     <Video className="w-4.5 h-4.5 text-blue-300" />
-                    Voir la Démo Vidéo
+                    Voir la démo
                   </a>
                   <button 
                     onClick={() => setShowAccountSpace(true)}
                     className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-slate-200 hover:text-white font-semibold text-sm px-8 py-3.5 rounded-xl transition-all border border-slate-800 hover:border-slate-700 cursor-pointer"
                   >
                     <User className="w-4.5 h-4.5 text-blue-400" />
-                    Accéder à Mon Compte
+                    Accéder à mon compte
                   </button>
                 </div>
 
@@ -191,7 +191,7 @@ export default function App() {
                     <div className="w-3 h-3 rounded-full bg-red-500/60" />
                     <div className="w-3 h-3 rounded-full bg-yellow-500/60" />
                     <div className="w-3 h-3 rounded-full bg-green-500/60" />
-                    <span className="text-[10px] text-slate-500 font-mono ml-2 mt-0.5">apprecIAtion - Enseignant Copilot</span>
+                    <span className="text-[10px] text-slate-500 font-mono ml-2 mt-0.5">apprecIAtion — Enseignant Copilot</span>
                   </div>
 
                   {/* Elegant Integration of the Logo apprecIAtion.png */}
@@ -208,7 +208,7 @@ export default function App() {
                           className="max-h-24 w-auto object-contain mx-auto filter drop-shadow-[0_0_8px_rgba(99,102,241,0.25)] hover:scale-105 transition-transform duration-300"
                         />
                         <p className="text-[10px] text-slate-400 font-display uppercase tracking-widest mt-3 border-t border-slate-800/80 pt-2">
-                          L'Assistant IA Souverain des Enseignants
+                          L'assistant de rédaction des enseignants
                         </p>
                       </div>
                     ) : (
@@ -220,21 +220,21 @@ export default function App() {
                   {/* Small dynamic mock status widgets */}
                   <div className="space-y-3 text-xs">
                     <div className="flex justify-between items-center bg-slate-950/60 p-3 rounded-lg border border-slate-850">
-                      <span className="text-slate-400 font-medium">Liaison Pronote / ÉcoleDirecte</span>
+                      <span className="text-slate-400 font-medium">École Directe · Pronote : bientôt</span>
                       <span className="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20 font-bold font-mono">
-                        PRÊTE
+                        ÉCOLE DIRECTE
                       </span>
                     </div>
 
                     <div className="flex justify-between items-center bg-slate-950/60 p-3 rounded-lg border border-slate-850">
-                      <span className="text-slate-400 font-medium">Hébergement Souverain (France)</span>
+                      <span className="text-slate-400 font-medium">Hébergé en France</span>
                       <span className="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded border border-blue-500/20 font-bold font-mono">
                         ACTIF
                       </span>
                     </div>
 
                     <div className="flex justify-between items-center bg-slate-950/60 p-3 rounded-lg border border-slate-850">
-                      <span className="text-slate-400 font-medium">Anonymisation des Noms</span>
+                      <span className="text-slate-400 font-medium">Pseudonymisation des prénoms</span>
                       <span className="text-[10px] bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded border border-purple-500/20 font-bold font-mono">
                         CONFORME RGPD
                       </span>
@@ -287,7 +287,7 @@ export default function App() {
               <div className="lg:col-span-5 space-y-6">
                 <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20 uppercase tracking-wider">
                   <Video className="w-3.5 h-3.5 text-blue-400" />
-                  Présentation en Images
+                  Présentation en images
                 </span>
 
                 <h2 className="text-3xl font-display font-bold text-white tracking-tight">
@@ -295,7 +295,7 @@ export default function App() {
                 </h2>
 
                 <p className="text-slate-400 text-sm leading-relaxed font-light">
-                  Regardez cette courte vidéo de démonstration pour comprendre comment l'assistant s'intègre naturellement à votre flux de travail, et comment générer des appréciations adaptées et impeccables en quelques clics.
+                  Quelques minutes suffisent pour voir comment l'assistant s'intègre à votre façon de travailler : vous lisez les propositions, vous corrigez si besoin, vous validez.
                 </p>
 
                 <div className="space-y-4 pt-2">
@@ -304,9 +304,9 @@ export default function App() {
                       1
                     </span>
                     <div>
-                      <h4 className="text-white font-bold text-sm">Prise en main simplifiée</h4>
+                      <h4 className="text-white font-bold text-sm">Prise en main immédiate</h4>
                       <p className="text-slate-400 text-xs mt-1 leading-relaxed">
-                        Visualisez l'interface pas-à-pas et la configuration des critères d'évaluation de vos élèves.
+                        L'outil se pose sur la page École Directe que vous utilisez déjà. Rien à réorganiser, aucun fichier à préparer.
                       </p>
                     </div>
                   </div>
@@ -316,9 +316,9 @@ export default function App() {
                       2
                     </span>
                     <div>
-                      <h4 className="text-white font-bold text-sm">Génération de propositions variées</h4>
+                      <h4 className="text-white font-bold text-sm">Trois propositions par élève</h4>
                       <p className="text-slate-400 text-xs mt-1 leading-relaxed">
-                        Découvrez comment l'IA française Mistral formule instantanément 3 alternatives personnalisables par élève.
+                        À partir de vos critères, l'outil propose trois formulations distinctes — équilibrée, exigeante, concise — que vous ajustez librement.
                       </p>
                     </div>
                   </div>
@@ -328,9 +328,9 @@ export default function App() {
                       3
                     </span>
                     <div>
-                      <h4 className="text-white font-bold text-sm">Copier-coller Pronote fluide</h4>
+                      <h4 className="text-white font-bold text-sm">Vous relisez, vous validez</h4>
                       <p className="text-slate-400 text-xs mt-1 leading-relaxed">
-                        Admirez la vitesse d'intégration directe pour remplir vos bulletins scolaires trimestriels sans effort.
+                        Aucun texte n'est écrit à votre place : vous gardez la main jusqu'au bout, et c'est vous qui validez ce qui partira dans le bulletin.
                       </p>
                     </div>
                   </div>
@@ -342,7 +342,7 @@ export default function App() {
                     className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs px-5 py-2.5 rounded-lg transition-colors cursor-pointer"
                   >
                     <User className="w-4 h-4" />
-                    Accéder à Mon Compte
+                    Accéder à mon compte
                   </button>
                   <a
                     href="#fonctionnalites"
@@ -367,13 +367,13 @@ export default function App() {
             <div className="text-center max-w-3xl mx-auto mb-16">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20 uppercase tracking-wider mb-3">
                 <Sliders className="w-3.5 h-3.5" />
-                Des outils sur-mesure
+                Des outils sur mesure
               </span>
               <h2 className="text-3xl sm:text-4xl font-display font-bold tracking-tight text-white mb-4">
-                Une interface conçue par et pour les enseignants
+                Une interface conçue pour le travail réel des enseignants
               </h2>
               <p className="text-slate-400 text-base">
-                Fini le syndrome de la page blanche et les appréciations répétitives. apprecIAtion vous aide à formuler un feedback précis qui valorise chaque élève.
+                Fini la page blanche et les appréciations répétitives. apprecIAtion aide à formuler un retour précis qui dit quelque chose de chaque élève — sans écrire à votre place.
               </p>
             </div>
 
@@ -386,14 +386,14 @@ export default function App() {
                   <div className="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 mb-4">
                     <FileText className="w-5 h-5" />
                   </div>
-                  <h3 className="text-white font-display font-bold text-lg mb-2">Appréciations Matières</h3>
+                  <h3 className="text-white font-display font-bold text-lg mb-2">Appréciations par matière</h3>
                   <p className="text-slate-400 text-xs leading-relaxed font-light">
-                    Saisissez vos critères (travail, participation, comportement) et obtenez instantanément des propositions calibrées. Gagnez en moyenne 15 heures par fin de trimestre tout en conservant une évaluation fine et unique.
+                    Saisissez vos critères (travail, participation, progrès, comportement) et obtenez des propositions calibrées, matière par matière. Vous conservez la formulation finale : l'outil propose, vous décidez. Ce sont plusieurs heures gagnées à chaque clôture de trimestre.
                   </p>
                 </div>
                 <div className="mt-4 border-t border-slate-850 pt-4 flex justify-between items-center text-[10px] text-slate-500 font-mono">
-                  <span>Gain de temps moyen</span>
-                  <span className="text-emerald-400 font-bold">-65% de temps passé</span>
+                  <span>Gain de temps</span>
+                  <span className="text-emerald-400 font-bold">Plusieurs heures par trimestre</span>
                 </div>
               </div>
 
@@ -403,9 +403,9 @@ export default function App() {
                   <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-4">
                     <Award className="w-5 h-5" />
                   </div>
-                  <h3 className="text-white font-display font-bold text-lg mb-2">Synthèses de Professeur Principal</h3>
+                  <h3 className="text-white font-display font-bold text-lg mb-2">Synthèses de professeur principal</h3>
                   <p className="text-slate-400 text-xs leading-relaxed font-light">
-                    Aggregez automatiquement le profil de l'élève pour rédiger la synthèse générale du trimestre. L'outil croise harmonieusement les forces, les faiblesses et le comportement global pour donner un cap de progrès clair.
+                    Rassemblez le profil de l'élève sur le trimestre et rédigez la synthèse générale à partir de ce que vous avez déjà observé.
                   </p>
                 </div>
                 <div className="mt-4 border-t border-slate-850 pt-4 flex justify-between items-center text-[10px] text-slate-500 font-mono">
@@ -419,9 +419,9 @@ export default function App() {
                 <div className="w-10 h-10 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 mb-4">
                   <Clock className="w-5 h-5" />
                 </div>
-                <h3 className="text-white font-display font-bold text-base mb-2">Alternatives & Nuances</h3>
+                <h3 className="text-white font-display font-bold text-base mb-2">Trois formulations, jamais une seule</h3>
                 <p className="text-slate-400 text-xs leading-relaxed font-light">
-                  Chaque clic produit 3 formulations distinctes : équilibrée, exigeante ou concise. Idéal pour s'ajuster au tempérament de l'élève et aux contraintes d'espace.
+                  Chaque génération produit trois propositions distinctes — équilibrée, exigeante, concise — pour éviter le texte formaté qui se répète d'un bulletin à l'autre.
                 </p>
               </div>
 
@@ -430,9 +430,9 @@ export default function App() {
                 <div className="w-10 h-10 rounded-lg bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center text-yellow-400 mb-4">
                   <Sliders className="w-5 h-5" />
                 </div>
-                <h3 className="text-white font-display font-bold text-base mb-2">Grilles Personnalisables</h3>
+                <h3 className="text-white font-display font-bold text-base mb-2">Grilles personnalisables</h3>
                 <p className="text-slate-400 text-xs leading-relaxed font-light">
-                  Importez ou modifiez directement vos critères thématiques (Méthodologie, Devoirs, Bavardages) pour concevoir un logiciel à l'image de vos exigences pédagogiques.
+                  Importez ou modifiez directement vos critères thématiques, matière par matière.
                 </p>
               </div>
 
@@ -441,9 +441,9 @@ export default function App() {
                 <div className="w-10 h-10 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 mb-4">
                   <Cpu className="w-5 h-5" />
                 </div>
-                <h3 className="text-white font-display font-bold text-base mb-2">Liaison Pronote / ÉcoleDirecte</h3>
+                <h3 className="text-white font-display font-bold text-base mb-2">Intégré à École Directe</h3>
                 <p className="text-slate-400 text-xs leading-relaxed font-light">
-                  Conçu sous forme de volet flottant très léger, le programme se superpose à votre navigateur pour coller l'appréciation d'un seul clic d'élève en élève.
+                  L'outil se présente sous la forme d'un volet léger, posé sur la page École Directe que vous avez déjà ouverte. Aucune double saisie, aucun export à faire.
                 </p>
               </div>
 
@@ -465,15 +465,15 @@ export default function App() {
               <div className="lg:col-span-7 space-y-6">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase tracking-wider">
                   <Lock className="w-3.5 h-3.5" />
-                  Souveraineté des données scolaires
+                  Données scolaires : ce qui sort, ce qui ne sort pas
                 </span>
                 
                 <h2 className="text-3xl sm:text-4xl font-display font-bold tracking-tight text-white">
-                  Respect absolu du RGPD et du secret professionnel
+                  Aucune identité d'élève ne quitte votre navigateur
                 </h2>
                 
                 <p className="text-slate-400 text-sm md:text-base leading-relaxed font-light">
-                  Contrairement aux assistants génériques d'IA américains, apprecIAtion a été conçu spécifiquement pour le cadre de l'Éducation Nationale. Les données d'identité des élèves ne quittent jamais votre machine : elles sont floutées, nettoyées et remplacées avant tout envoi.
+                  Les assistants d'IA génériques ne sont pas conçus pour le cadre scolaire. apprecIAtion l'a été dès le départ : le prénom est remplacé par un pseudonyme avant tout envoi, et le nom de famille n'est jamais lu. Le service est hébergé en France, et l'outil est utilisé en établissement avec l'accord de la direction.
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
@@ -482,10 +482,10 @@ export default function App() {
                   <div className="bg-slate-950 p-4 rounded-xl border border-slate-850 space-y-2">
                     <div className="flex items-center gap-2 text-white font-bold text-sm">
                       <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping shrink-0" />
-                      <span>Mistral AI (Souveraineté)</span>
+                      <span>Reformulation par Mistral AI</span>
                     </div>
                     <p className="text-xs text-slate-400 leading-relaxed">
-                      Traitement opéré via l'IA générative française Mistral AI, hébergée sur des infrastructures situées exclusivement en Europe, en dehors du champ d'application du Cloud Act américain.
+                      Les textes sont reformulés par l'IA générative française Mistral AI, via notre relais hébergé en France. La clé d'accès à Mistral reste sur notre serveur : elle n'est jamais présente dans l'extension.
                     </p>
                   </div>
 
@@ -493,10 +493,10 @@ export default function App() {
                   <div className="bg-slate-950 p-4 rounded-xl border border-slate-850 space-y-2">
                     <div className="flex items-center gap-2 text-white font-bold text-sm">
                       <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse shrink-0" />
-                      <span>Anonymisation de bout en bout</span>
+                      <span>Pseudonymisation systématique</span>
                     </div>
                     <p className="text-xs text-slate-400 leading-relaxed">
-                      Seuls les prénoms de vos élèves sont fournis pour assurer la contextualisation du genre et de la grammaire. Les noms de famille ne sont jamais requis.
+                      Avant l'envoi, le prénom de l'élève est remplacé par un prénom-miroir (Léa, Pierre…). Ni le nom de famille, ni la date de naissance, ni les notes chiffrées, ni les identifiants de compte ne sont transmis.
                     </p>
                   </div>
 
@@ -504,10 +504,10 @@ export default function App() {
                   <div className="bg-slate-950 p-4 rounded-xl border border-slate-850 space-y-2">
                     <div className="flex items-center gap-2 text-white font-bold text-sm">
                       <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse shrink-0" />
-                      <span>Garder le contrôle</span>
+                      <span>Vous restez l'unique rédacteur</span>
                     </div>
                     <p className="text-xs text-slate-400 leading-relaxed">
-                      Le logiciel n'automatise rien de manière aveugle. L'enseignant reste l'unique rédacteur et valideur de son analyse pédagogique, de la forme et du style, conformément à sa mission d'enseignant.
+                      L'outil propose, vous relisez, vous corrigez, vous validez. Aucune écriture dans la page sans votre clic. La responsabilité pédagogique du texte reste la vôtre — et c'est ce qui rend l'outil utilisable dans un cadre scolaire.
                     </p>
                   </div>
 
@@ -515,14 +515,24 @@ export default function App() {
                   <div className="bg-slate-950 p-4 rounded-xl border border-slate-850 space-y-2">
                     <div className="flex items-center gap-2 text-white font-bold text-sm">
                       <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0" />
-                      <span>Zéro stockage persistant</span>
+                      <span>Rien d'identifiant sur nos serveurs</span>
                     </div>
                     <p className="text-xs text-slate-400 leading-relaxed">
-                      Vos listes d'élèves, vos classes et vos historiques d'appréciations sont cryptés et stockés en toute sécurité de manière locale sur votre disque dur. Rien n'est conservé sur des serveurs externes.
+                      Nos serveurs ne conservent aucune donnée d'élève. Vos listes et vos corrections restent dans votre navigateur, sur votre poste. Le détail complet figure dans notre politique de confidentialité.
                     </p>
                   </div>
 
                 </div>
+
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Les propositions sont rédigées par un modèle de langage : elles peuvent se tromper ou mal interpréter une situation. Vous les relisez et les corrigez avant tout usage — c'est vous qui signez l'appréciation.
+                </p>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Il ne publie rien à votre place. Il ne remplit aucun bulletin sans votre validation. Il ne conserve aucune donnée d'élève sur nos serveurs.
+                </p>
+                <a href="/politique-confidentialite.html" className="inline-flex text-xs text-blue-400 hover:text-blue-300 font-semibold">
+                  Politique de confidentialité complète
+                </a>
 
               </div>
 
@@ -581,41 +591,18 @@ export default function App() {
             ========================================================================= */}
         <section className="py-20 bg-slate-950 border-b border-slate-900 relative">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            
-            <div className="text-center max-w-3xl mx-auto mb-16">
+            <div className="text-center max-w-3xl mx-auto">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20 uppercase tracking-wider mb-3">
                 <CheckCircle className="w-3.5 h-3.5 text-blue-400" />
-                Retours d'expérience
+                Enseignants
               </span>
               <h2 className="text-3xl sm:text-4xl font-display font-bold tracking-tight text-white mb-4">
-                Adopté par des centaines de professeurs
+                Plus de 150 enseignants l'ont déjà téléchargé
               </h2>
               <p className="text-slate-400 text-base">
-                Découvrez comment vos collègues tirent parti d'apprecIAtion pour simplifier la clôture des trimestres.
+                Des professeurs de collège et de lycée l'utilisent pour préparer leurs conseils de classe et leurs bulletins.
               </p>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {TESTIMONIALS.map((t) => (
-                <div key={t.id} className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-6 flex flex-col justify-between hover:border-slate-700/85 transition-all">
-                  <p className="text-slate-300 text-xs leading-relaxed font-light italic mb-6">
-                    "{t.content}"
-                  </p>
-                  <div className="flex items-center gap-3">
-                    <img 
-                      src={t.avatarUrl} 
-                      alt={t.author}
-                      className="w-10 h-10 rounded-full object-cover border border-slate-800"
-                    />
-                    <div>
-                      <h4 className="text-white font-semibold text-xs">{t.author}</h4>
-                      <p className="text-slate-500 text-[10px]">{t.role} • <span className="text-blue-400">{t.school}</span></p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
           </div>
         </section>
 

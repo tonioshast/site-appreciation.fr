@@ -80,6 +80,8 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
 
   // Email verification state
   const [emailVerified, setEmailVerified] = useState(false);
+  const [waiverAccepted, setWaiverAccepted] = useState(false);
+  const [waiverTimestamp, setWaiverTimestamp] = useState("");
   const [buyerPassword, setBuyerPassword] = useState("");
   const [buyerPasswordConfirm, setBuyerPasswordConfirm] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
@@ -367,6 +369,10 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
       setSubmitError("Le mot de passe doit contenir au moins 6 caractères.");
       return;
     }
+    if (!waiverAccepted) {
+      setSubmitError("Veuillez cocher la case de renonciation au droit de rétractation pour accéder au paiement.");
+      return;
+    }
 
     setIsSubmitting(true);
     setSubmitError(null);
@@ -400,7 +406,10 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
           systeme_exploitation: "",
           ent: "",
           etablissement: "",
-          identifiant_prof: ""
+          identifiant_prof: "",
+          renonciation_retractation: true,
+          renonciation_horodatage: waiverTimestamp || new Date().toISOString(),
+          cgv_version: "2026-10-29"
         }),
       });
 
@@ -448,6 +457,8 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
     setSubmitError(null);
     setIsSubmitting(false);
     setEmailVerified(false);
+    setWaiverAccepted(false);
+    setWaiverTimestamp("");
     setVerificationCode("");
     setCodeSent(false);
     setSendingCode(false);
@@ -466,13 +477,13 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase tracking-wider mb-3">
             <Zap className="w-3 h-3" />
-            Accès instantané
+            Paiement unique · sans abonnement
           </span>
           <h2 className="text-3xl sm:text-4xl font-display font-bold tracking-tight text-white mb-4">
             Licences & Tarifs
           </h2>
           <p className="text-slate-400 text-base">
-            Acquérez une licence définitive pour débloquer la puissance souveraine de rédaction sans aucune limite. Le téléchargement de votre logiciel s'effectue ensuite directement depuis votre espace personnel.
+            Une licence achetée une fois, valable pour l'année scolaire en cours. Pas d'abonnement, pas de reconduction automatique, aucune carte enregistrée. Dès le paiement, le fichier d'installation vous attend dans votre espace client, avec la facture. Vos listes d'élèves et vos corrections, elles, restent sur votre poste.
           </p>
         </div>
 
@@ -488,11 +499,11 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
             {/* Pack Enseignant Matière */}
             <div className="bg-slate-900/40 border border-slate-800/60 rounded-2xl p-6 flex flex-col justify-between hover:border-slate-700/60 transition-all">
               <div>
-                <h4 className="text-slate-400 font-bold uppercase tracking-wider text-xs mb-1">Pour Enseignant</h4>
+                <h4 className="text-slate-400 font-bold uppercase tracking-wider text-xs mb-1">Pour enseignant</h4>
                 <h5 className="text-white font-display font-bold text-2xl mb-4">Pack Enseignant Matière</h5>
                 <div className="flex items-baseline mb-6 border-b border-slate-850 pb-5">
                   <span className="text-4xl font-bold text-white">{formatPriceCard(configPack1, "19.90")}</span>
-                  <span className="text-slate-500 text-xs ml-2">Licence d'1 an</span>
+                  <span className="text-slate-500 text-xs ml-2">Achat unique · valable pour l'année scolaire</span>
                 </div>
                 <ul className="space-y-3.5 text-xs text-slate-300 mb-8">
                   <li className="flex items-center gap-2">
@@ -505,7 +516,7 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
                   </li>
                   <li className="flex items-center gap-2">
                     <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                    <span>Saisie assistée Pronote & EcoleDirecte</span>
+                    <span>Saisie assistée École Directe (Pronote bientôt)</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <Check className="w-4 h-4 text-emerald-400 shrink-0" />
@@ -525,7 +536,7 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
                 })}
                 className="w-full bg-slate-850 hover:bg-slate-800 text-slate-300 font-semibold text-xs py-3 rounded-xl transition-all border border-slate-850 hover:border-slate-700 cursor-pointer"
               >
-                Acheter ma licence
+                Choisir cette licence
               </button>
             </div>
 
@@ -533,11 +544,11 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
             <div className="bg-slate-900/80 border-2 border-blue-500/80 rounded-2xl p-6 flex flex-col justify-between shadow-xl shadow-blue-500/5 relative">
               
               <div>
-                <h4 className="text-blue-400 font-bold uppercase tracking-wider text-xs mb-1">Pour Enseignant & PP</h4>
+                <h4 className="text-blue-400 font-bold uppercase tracking-wider text-xs mb-1">Pour enseignant et professeur principal</h4>
                 <h5 className="text-white font-display font-bold text-2xl mb-4">Pack Enseignant Matière + Professeur Principal</h5>
                 <div className="flex items-baseline mb-6 border-b border-slate-850 pb-5">
                   <span className="text-4xl font-bold text-white">{formatPriceCard(configPack2, "29.90")}</span>
-                  <span className="text-slate-400 text-xs ml-2">Licence d'1 an</span>
+                  <span className="text-slate-400 text-xs ml-2">Achat unique · valable pour l'année scolaire</span>
                 </div>
                 <ul className="space-y-3.5 text-xs text-slate-300 mb-8">
                   <li className="flex items-center gap-2">
@@ -562,10 +573,28 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
                 })}
                 className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs py-3 rounded-xl transition-all shadow-lg shadow-blue-500/10 cursor-pointer"
               >
-                Acheter ma licence
+                Choisir cette licence
               </button>
             </div>
 
+          </div>
+
+          <p className="text-center text-xs text-slate-500 mt-8 max-w-2xl mx-auto leading-relaxed">
+            Prix en euros. TVA non applicable, article 293 B du CGI. Paiement unique, aucun prélèvement récurrent. Conditions de vente et droit de rétractation :{" "}
+            <a href="/cgv.html" className="text-blue-400 hover:text-blue-300">voir les CGV</a>.
+          </p>
+          <p className="text-center text-xs text-slate-400 mt-3">
+            Vous êtes un établissement ? Une licence collective est possible sur devis —{" "}
+            <a href="mailto:contact@appreciation.fr" className="text-blue-400 hover:text-blue-300">contact@appreciation.fr</a>
+          </p>
+          <div className="text-center mt-6">
+            <button
+              type="button"
+              onClick={() => onOpenAccount && onOpenAccount()}
+              className="text-xs text-blue-400 hover:text-blue-300 font-semibold cursor-pointer bg-transparent border-none"
+            >
+              J'ai déjà une licence — me connecter
+            </button>
           </div>
         </div>
 
@@ -828,6 +857,36 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
                   </div>
                 )}
 
+                <div className="bg-slate-950/80 border border-amber-500/25 p-4 rounded-xl space-y-2">
+                  <label className="flex items-start gap-3 cursor-pointer text-xs text-slate-300 leading-relaxed">
+                    <input
+                      type="checkbox"
+                      checked={waiverAccepted}
+                      onChange={(e) => {
+                        const on = e.target.checked;
+                        setWaiverAccepted(on);
+                        setWaiverTimestamp(on ? new Date().toISOString() : "");
+                      }}
+                      className="mt-0.5 w-4 h-4 shrink-0 accent-blue-600"
+                    />
+                    <span>
+                      <strong className="text-white">Je demande l'accès immédiat à l'extension apprecIAtion et reconnais qu'ainsi je perds mon droit de rétractation de quatorze jours</strong>
+                      {" "}(article L. 221-28, 13° du code de la consommation).{" "}
+                      <a href="/cgv.html" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300">
+                        Conditions générales de vente
+                      </a>
+                    </span>
+                  </label>
+                  {waiverAccepted && waiverTimestamp && (
+                    <p className="text-[10px] text-slate-500 font-mono pl-7">
+                      Consentement enregistré le {new Date(waiverTimestamp).toLocaleString("fr-FR")}
+                    </p>
+                  )}
+                  <p className="text-[10px] text-slate-500 pl-7">
+                    Paiement unique, sans abonnement. Licence valable pour l'année scolaire. Aucune carte enregistrée chez nous.
+                  </p>
+                </div>
+
                 {/* Submit Error banner if any */}
                 {submitError && (
                   <div className="bg-rose-500/10 border border-rose-500/20 p-3 rounded-lg text-rose-400 text-xs flex gap-2 items-center">
@@ -847,7 +906,7 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
                   </button>
                   <button
                     type="submit"
-                    disabled={!emailVerified || !buyerPassword || buyerPassword !== buyerPasswordConfirm || buyerPassword.length < 6 || isSubmitting}
+                    disabled={!emailVerified || !buyerPassword || buyerPassword !== buyerPasswordConfirm || buyerPassword.length < 6 || !waiverAccepted || isSubmitting}
                     className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-xs px-6 py-2.5 rounded-lg shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center gap-2"
                   >
                     {isSubmitting ? (

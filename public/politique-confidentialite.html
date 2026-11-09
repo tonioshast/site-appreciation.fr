@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Politique de confidentialité — apprecIAtion</title>
+<meta name="description" content="Politique de confidentialité du site apprecIAtion et de l'extension de rédaction assistée pour enseignants.">
+<style>
+  :root { color-scheme: light dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 2.5rem 1.25rem 5rem; line-height: 1.65;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    max-width: 46rem; margin-inline: auto; font-size: 16px;
+  }
+  h1 { font-size: 1.7rem; line-height: 1.2; margin: 0 0 .3rem; }
+  h2 { font-size: 1.2rem; margin: 2.6rem 0 .6rem; padding-bottom: .35rem;
+       border-bottom: 1px solid rgba(128,128,128,.35); }
+  h3 { font-size: 1rem; margin: 1.5rem 0 .3rem; }
+  p, li { margin: .5rem 0; }
+  .sous-titre { opacity: .72; margin-top: 0; font-size: .95rem; }
+  table { border-collapse: collapse; width: 100%; margin: 1.1rem 0; font-size: .93rem; }
+  th, td { border: 1px solid rgba(128,128,128,.4); padding: .5rem .7rem; text-align: left; vertical-align: top; }
+  th { background: rgba(128,128,128,.12); font-weight: 650; }
+  code { background: rgba(128,128,128,.16); padding: .1rem .35rem; border-radius: 4px; font-size: .92em; }
+  .cle { border-left: 3px solid rgba(180,83,9,.85); background: rgba(234,179,8,.10);
+         padding: .6rem .9rem; margin: 1.2rem 0; border-radius: 0 6px 6px 0; }
+  .non { color: #b91c1c; font-weight: 650; }
+  footer { margin-top: 3.5rem; font-size: .88rem; opacity: .72; border-top: 1px solid rgba(128,128,128,.3); padding-top: 1rem; }
+  a { color: inherit; }
+  ul, ol { padding-left: 1.3rem; }
+  .en { border-top: 2px solid rgba(128,128,128,.45); margin-top: 3.5rem; padding-top: 1.5rem; }
+</style>
+</head>
+<body>
+
+<h1>Politique de confidentialité</h1>
+<p class="sous-titre">Site appreciation.fr et extension apprecIAtion · version du 29 octobre 2026</p>
+
+<div class="cle">
+  <p><strong>L'essentiel, en quatre lignes.</strong> Aucune identité d'élève n'arrive chez nous :
+  le prénom est remplacé par un prénom-miroir avant l'envoi, et le nom de famille n'est jamais lu.
+  Ni les notes, ni les moyennes, ni les rangs, ni les dates de naissance ne sont transmis. Vos
+  listes d'élèves et vos corrections restent dans votre navigateur. Aucun traceur, aucune mesure
+  d'audience, aucun cookie publicitaire sur ce site.</p>
+</div>
+
+<h2>1. Qui est responsable du traitement</h2>
+<table>
+  <tr><th>Responsable</th><td>Antoine MARAIS — entrepreneur individuel (micro-entreprise)</td></tr>
+  <tr><th>Adresse</th><td>40 place du Docteur Bichon, 49100 Angers, France</td></tr>
+  <tr><th>Contact</th><td><a href="mailto:contact@appreciation.fr">contact@appreciation.fr</a></td></tr>
+  <tr><th>Délégué à la protection des données</th><td>Aucun délégué n'a été désigné : les
+    traitements mis en œuvre ne relèvent pas des cas de désignation obligatoire prévus à
+    l'article 37 du RGPD. Les demandes sont traitées directement par le responsable, à l'adresse
+    ci-dessus.</td></tr>
+</table>
+<p>Cette politique couvre deux traitements distincts : celui du <strong>site</strong>
+(appreciation.fr) et celui du <strong>service de reformulation</strong> utilisé par l'extension.
+Elle ne couvre pas École Directe, qui est un service édité par un tiers et dispose de sa propre
+politique.</p>
+
+<h2>2. Dans quel but, et sur quelle base légale</h2>
+<table>
+  <tr>
+    <th>Finalité</th><th>Base légale</th>
+  </tr>
+  <tr>
+    <td>Créer votre compte, vendre et gérer votre licence, émettre la facture, vérifier à chaque
+      usage que la licence est active.</td>
+    <td>Exécution du contrat — article 6.1.b du RGPD ; obligation légale pour la conservation des
+      factures — article 6.1.c.</td>
+  </tr>
+  <tr>
+    <td>Reformuler les appréciations et les synthèses que vous demandez, via le relais et le
+      fournisseur de modèle de langage.</td>
+    <td>Exécution du contrat — article 6.1.b.</td>
+  </tr>
+  <tr>
+    <td>Répondre à vos messages d'assistance et de réclamation.</td>
+    <td>Exécution du contrat ; intérêt légitime à traiter les réclamations — article 6.1.f.</td>
+  </tr>
+  <tr>
+    <td>Défendre nos droits en cas de litige (conservation des preuves de commande et du
+      consentement à l'exécution immédiate).</td>
+    <td>Intérêt légitime — article 6.1.f.</td>
+  </tr>
+</table>
+<p>Aucune donnée n'est utilisée pour de la prospection commerciale non sollicitée, pour du
+profilage, ni pour alimenter un modèle d'intelligence artificielle : les textes envoyés au
+fournisseur de modèle ne servent qu'à produire la réponse que vous attendez, et ne sont pas
+conservés par nous.</p>
+
+<h2>3. Quelles données d'élèves sont transmises — et lesquelles ne le sont jamais</h2>
+<p>C'est la question qui compte pour un enseignant, alors voici la réponse détaillée, vérifiée
+dans le code de l'extension.</p>
+
+<h3>Ce qui part vers notre relais, puis vers Mistral AI</h3>
+<ul>
+  <li>Le <strong>prénom remplacé par un prénom-miroir</strong> (« Léa », « Pierre »…). Le prénom
+    réel ne quitte pas votre navigateur : il ne sert qu'à choisir un miroir du même genre et de
+    la même initiale, pour que la grammaire du texte reste juste.</li>
+  <li>Les <strong>critères que vous avez cochés</strong> ou saisis (travail, participation,
+    progrès, comportement, méthodologie…), dans la formulation que vous avez choisie.</li>
+  <li>Le <strong>ton</strong> et le <strong>style</strong> demandés.</li>
+  <li>Le cas échéant, l'<strong>ouverture et la conclusion</strong> retenues pour une synthèse, et
+    le <strong>bilan de la période précédente</strong> tel que vous l'avez enregistré.</li>
+</ul>
+
+<h3>Ce qui n'est jamais transmis</h3>
+<table>
+  <tr><th>Nom de famille</th><td class="non">jamais lu</td></tr>
+  <tr><th>Prénom réel</th><td class="non">jamais transmis — remplacé par le prénom-miroir</td></tr>
+  <tr><th>Moyenne, notes chiffrées, rang</th><td class="non">jamais transmis — le champ est vidé
+    avant la construction de la requête</td></tr>
+  <tr><th>Date de naissance, adresse, photo</th><td class="non">jamais transmis</td></tr>
+  <tr><th>Identifiant École Directe de l'élève</th><td class="non">jamais transmis</td></tr>
+  <tr><th>Vos listes d'élèves, vos corrections, votre historique</th><td class="non">restent dans
+    votre navigateur</td></tr>
+</table>
+
+<h3>Ce que nous conservons de votre côté</h3>
+<p>Nos serveurs ne conservent <strong>aucune donnée d'élève</strong> : le relais transmet la requête
+au fournisseur de modèle et renvoie la réponse, sans archiver le contenu. Les journaux techniques
+sont limités à l'horodatage, au code de retour et à la consommation de jetons — jamais le contenu
+d'une appréciation, jamais un prénom, jamais un nom.</p>
+
+<h2>4. Qui reçoit des données</h2>
+<table>
+  <tr><th>o2switch</th><td>Hébergeur du site et des courriels. Serveurs en France.</td></tr>
+  <tr><th>Scaleway</th><td>Hébergeur du relais logiciel. Serveurs en France.</td></tr>
+  <tr><th>Mistral AI</th><td>Fournisseur du modèle de langage qui reformule les textes.
+    Société française, serveurs dans l'Union européenne. Les textes transmis ne contiennent
+    aucune identité d'élève, et la clé d'API reste sur notre serveur — elle n'est jamais présente
+    dans l'extension.</td></tr>
+  <tr><th>Stripe Payments Europe, Ltd.</th><td>Prestataire de paiement, établi en Irlande. Vos
+    données bancaires sont saisies sur son interface et ne transitent pas par nos serveurs : nous
+    ne voyons ni le numéro de carte ni son cryptogramme.</td></tr>
+</table>
+<p>Ces prestataires agissent comme sous-traitants, sur instruction documentée, et sont liés par des
+engagements de confidentialité et de sécurité. <strong>Aucune donnée n'est vendue, louée ni
+échangée.</strong> Aucune donnée n'est transmise à des fins publicitaires. Aucun transfert de
+données d'élève hors de l'Union européenne n'a lieu : les hébergeurs et le fournisseur de modèle
+sont établis en France ou dans l'Union.</p>
+
+<h2>5. Combien de temps nous conservons</h2>
+<table>
+  <tr><th>Compte client (courriel, mot de passe haché)</th><td>Pendant la durée de la relation
+    contractuelle, puis 3 ans à compter du dernier contact.</td></tr>
+  <tr><th>Factures et pièces comptables</th><td>10 ans, obligation légale.</td></tr>
+  <tr><th>Preuve du consentement à l'exécution immédiate (case cochée, horodatage, adresse IP,
+    version des CGV)</th><td>5 ans à compter de la vente — durée de la garantie légale.</td></tr>
+  <tr><th>Journaux techniques du relais</th><td>30 jours maximum, sans contenu d'appréciation.</td></tr>
+  <tr><th>Données d'élèves</th><td>Aucune conservation : elles ne sont pas enregistrées chez nous.</td></tr>
+  <tr><th>Données stockées dans votre navigateur</th><td>Jusqu'à ce que vous les effaciez depuis
+    l'extension, ou que vous vidiez les données du site. Vous en restez maître.</td></tr>
+</table>
+
+<h2>6. Cookies et traceurs</h2>
+<p>Le site ne dépose <strong>aucun cookie publicitaire, aucun cookie de mesure d'audience, aucun
+traceur tiers</strong>. Il n'y a donc pas de bandeau de consentement à afficher, et rien à
+refuser.</p>
+<p>La session de l'espace client est conservée dans le navigateur (<code>sessionStorage</code>),
+expirée après 30 minutes d'inactivité ou à la fermeture de l'onglet. Aucun cookie de session
+n'est nécessaire au fonctionnement actuel du compte.</p>
+
+<h2>7. Comment vos données sont protégées</h2>
+<ul>
+  <li>Chiffrement des échanges en HTTPS sur l'ensemble du site et du relais.</li>
+  <li>Clé d'accès à Mistral AI conservée côté serveur, invisible depuis l'extension ; chaque appel
+    est authentifié par un ticket d'autorisation délivré après vérification de la licence.</li>
+  <li>Mots de passe stockés sous forme hachée, jamais en clair.</li>
+  <li>Accès aux serveurs limité au responsable du traitement.</li>
+  <li>Minimisation à la source : tout ce qui n'est pas nécessaire à la reformulation n'est pas
+    envoyé — au premier rang desquelles l'identité de l'élève.</li>
+</ul>
+<p>En cas de violation de données susceptible d'engendrer un risque élevé pour vos droits, vous
+seriez informé dans les meilleurs délais, et la CNIL notifiée dans les 72 heures lorsque la
+notification est requise.</p>
+
+<h2>8. Vos droits</h2>
+<p>Vous disposez des droits suivants sur les données qui vous concernent en tant qu'enseignant
+client : accès, rectification, effacement, limitation, opposition, et portabilité.</p>
+<p>Ces droits s'exercent par courriel à
+<a href="mailto:contact@appreciation.fr">contact@appreciation.fr</a>, ou par courrier à l'adresse
+indiquée à l'article 1. Une réponse vous est apportée dans un délai d'un mois, prolongeable de deux
+mois en cas de demande complexe. Aucun frais n'est demandé, sauf demandes manifestement abusives
+ou répétitives.</p>
+<p>Si vous estimez, après nous avoir contactés, que vos droits ne sont pas respectés, vous pouvez
+introduire une réclamation auprès de la CNIL — 3 place de Fontenoy, TSA 80715, 75334 Paris Cedex
+07 — <a href="https://www.cnil.fr">cnil.fr</a>.</p>
+
+<h2>9. Les élèves et leurs familles</h2>
+<p>L'éditeur n'a pas de relation directe avec les élèves ni avec leurs familles, et ne conserve
+aucune donnée les concernant. Les données d'élèves sont saisies et utilisées par l'enseignant dans
+le cadre de sa mission, sous la responsabilité de son établissement, qui est le responsable de
+traitement pour les bulletins et les appréciations.</p>
+<p>Concrètement, cela signifie que :</p>
+<ul>
+  <li>une demande d'accès ou d'effacement portant sur une appréciation doit être adressée à
+    l'établissement, qui détient le bulletin ;</li>
+  <li>l'extension ne transmet à l'éditeur aucune information permettant d'identifier un élève ;</li>
+  <li>les données stockées dans le navigateur de l'enseignant relèvent de son poste de travail et
+    des règles de son établissement.</li>
+</ul>
+
+<h2>10. Intelligence artificielle : ce que vous devez savoir</h2>
+<p>Les propositions de texte sont produites par un modèle de langage (Mistral AI). Elles peuvent
+être inexactes, maladroites ou inadaptées à la situation d'un élève. Vous les relisez, les
+corrigez et les validez : <strong>aucun texte n'est écrit dans un bulletin sans votre action</strong>,
+et la responsabilité pédagogique du texte final reste entièrement la vôtre.</p>
+<p>L'usage d'un système d'intelligence artificielle pour vous assister est signalé en clair sur la
+page d'accueil et dans la page de tarifs. Aucune décision automatisée produisant des effets
+juridiques n'est prise à l'égard d'un élève : l'outil ne note pas, ne classe pas et ne décide
+rien.</p>
+
+<h2>11. Modifications</h2>
+<p>Cette politique peut évoluer, notamment si les fonctionnalités ou les prestataires changent. La
+version applicable est celle en ligne à la date de votre visite, et la date de dernière mise à jour
+figure en tête de page. Toute modification substantielle est annoncée dans l'espace client.</p>
+
+<h2>12. Nous contacter</h2>
+<p>Une question sur cette politique, une demande d'exercice de droits, un doute sur ce qui est
+transmis : <a href="mailto:contact@appreciation.fr">contact@appreciation.fr</a>.</p>
+<p>Pour les conditions de vente, voir les <a href="/cgv.html">CGV</a> ; pour
+l'identité de l'éditeur et de l'hébergeur, voir les <a href="/mentions-legales.html">mentions légales</a>.</p>
+
+<div class="en">
+<h2>Summary in English</h2>
+<p><em>This is a courtesy translation of the key points. The French version is the binding one.</em></p>
+<p>apprecIAtion is a browser extension that helps French teachers draft school reports. <strong>No
+student identity ever reaches our servers.</strong> Before any request is sent, the student's first
+name is replaced by a random but grammatically consistent stand-in first name; the surname is
+never even read. Marks, averages, class ranks, birth dates and school platform identifiers are
+never transmitted.</p>
+<p>What is sent: the stand-in first name, the criteria you selected, the requested tone and style,
+and — for form-teacher summaries — the opening, closing and previous term's summary. Requests go
+through a relay hosted in France, then to Mistral AI (French company, EU servers). We keep no
+student data, and technical logs never contain report content.</p>
+<p>Your student lists and edits stay in your browser. The website sets no analytics, no advertising
+and no third-party cookies. The client area session uses sessionStorage (30 minutes of inactivity),
+not a tracking cookie.</p>
+<p>Data controller: Antoine MARAIS, 40 place du Docteur Bichon, 49100 Angers, France —
+<a href="mailto:contact@appreciation.fr">contact@appreciation.fr</a>. You may exercise your access,
+rectification, erasure, restriction, objection and portability rights by email; we answer within
+one month. You may also lodge a complaint with the CNIL (French data protection authority).</p>
+</div>
+
+<footer>
+  <p>Page autonome : aucun script, aucune ressource externe, aucune mesure d'audience. Publiée à
+  l'adresse <code>https://appreciation.fr/politique-confidentialite.html</code>.</p>
+</footer>
+
+</body>
+</html>
