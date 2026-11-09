@@ -80,6 +80,8 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
 
   // Email verification state
   const [emailVerified, setEmailVerified] = useState(false);
+  const [waiverAccepted, setWaiverAccepted] = useState(false);
+  const [waiverTimestamp, setWaiverTimestamp] = useState("");
   const [buyerPassword, setBuyerPassword] = useState("");
   const [buyerPasswordConfirm, setBuyerPasswordConfirm] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
@@ -367,6 +369,10 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
       setSubmitError("Le mot de passe doit contenir au moins 6 caractères.");
       return;
     }
+    if (!waiverAccepted) {
+      setSubmitError("Veuillez cocher la case de renonciation au droit de rétractation pour accéder au paiement.");
+      return;
+    }
 
     setIsSubmitting(true);
     setSubmitError(null);
@@ -400,7 +406,10 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
           systeme_exploitation: "",
           ent: "",
           etablissement: "",
-          identifiant_prof: ""
+          identifiant_prof: "",
+          renonciation_retractation: true,
+          renonciation_horodatage: waiverTimestamp || new Date().toISOString(),
+          cgv_version: "2026-10-29"
         }),
       });
 
@@ -448,6 +457,8 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
     setSubmitError(null);
     setIsSubmitting(false);
     setEmailVerified(false);
+    setWaiverAccepted(false);
+    setWaiverTimestamp("");
     setVerificationCode("");
     setCodeSent(false);
     setSendingCode(false);
@@ -846,6 +857,36 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
                   </div>
                 )}
 
+                <div className="bg-slate-950/80 border border-amber-500/25 p-4 rounded-xl space-y-2">
+                  <label className="flex items-start gap-3 cursor-pointer text-xs text-slate-300 leading-relaxed">
+                    <input
+                      type="checkbox"
+                      checked={waiverAccepted}
+                      onChange={(e) => {
+                        const on = e.target.checked;
+                        setWaiverAccepted(on);
+                        setWaiverTimestamp(on ? new Date().toISOString() : "");
+                      }}
+                      className="mt-0.5 w-4 h-4 shrink-0 accent-blue-600"
+                    />
+                    <span>
+                      <strong className="text-white">Je demande l'accès immédiat à l'extension apprecIAtion et reconnais qu'ainsi je perds mon droit de rétractation de quatorze jours</strong>
+                      {" "}(article L. 221-28, 13° du code de la consommation).{" "}
+                      <a href="/cgv.html" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300">
+                        Conditions générales de vente
+                      </a>
+                    </span>
+                  </label>
+                  {waiverAccepted && waiverTimestamp && (
+                    <p className="text-[10px] text-slate-500 font-mono pl-7">
+                      Consentement enregistré le {new Date(waiverTimestamp).toLocaleString("fr-FR")}
+                    </p>
+                  )}
+                  <p className="text-[10px] text-slate-500 pl-7">
+                    Paiement unique, sans abonnement. Licence valable pour l'année scolaire. Aucune carte enregistrée chez nous.
+                  </p>
+                </div>
+
                 {/* Submit Error banner if any */}
                 {submitError && (
                   <div className="bg-rose-500/10 border border-rose-500/20 p-3 rounded-lg text-rose-400 text-xs flex gap-2 items-center">
@@ -865,7 +906,7 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
                   </button>
                   <button
                     type="submit"
-                    disabled={!emailVerified || !buyerPassword || buyerPassword !== buyerPasswordConfirm || buyerPassword.length < 6 || isSubmitting}
+                    disabled={!emailVerified || !buyerPassword || buyerPassword !== buyerPasswordConfirm || buyerPassword.length < 6 || !waiverAccepted || isSubmitting}
                     className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-xs px-6 py-2.5 rounded-lg shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center gap-2"
                   >
                     {isSubmitting ? (
