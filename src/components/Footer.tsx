@@ -15,7 +15,7 @@ export default function Footer() {
           <div className="md:col-span-2 space-y-4">
             <Logo showSubtitle={true} size="sm" className="!items-start" />
             <p className="text-xs text-slate-500 max-w-sm mt-3 leading-relaxed">
-              L'assistant IA de rédaction souverain qui redonne du temps aux enseignants, tout en garantissant un respect absolu de la vie privée des élèves et de la législation française.
+              L'assistant de rédaction qui redonne du temps aux enseignants, sans jamais écrire à leur place.
             </p>
           </div>
 
@@ -37,13 +37,13 @@ export default function Footer() {
             <div className="flex gap-2 items-start text-xs bg-slate-900/40 p-3 rounded-lg border border-slate-850">
               <Shield className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
               <p className="text-[11px] text-slate-400 leading-relaxed">
-                Conforme au RGPD. Hébergement souverain européen. Zéro stockage permanent d'identité.
+                Aucune identité d'élève transmise. Prénoms pseudonymisés avant tout envoi. Service hébergé en France, sans mesure d'audience ni traceur.
               </p>
             </div>
             <div className="flex gap-2 items-start text-xs bg-slate-900/40 p-3 rounded-lg border border-slate-850">
               <Sparkles className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
               <p className="text-[11px] text-slate-400 leading-relaxed">
-                Propulsé par l'IA française Mistral AI, certifiée conforme pour l'Éducation Nationale.
+                Reformulation assurée par l'IA générative française Mistral AI.
               </p>
             </div>
           </div>
@@ -54,12 +54,12 @@ export default function Footer() {
         <div className="border-t border-slate-900 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <p>© {currentYear} apprecIAtion. Tous droits réservés.</p>
           <div className="flex gap-6">
-            <a href="#tarifs" className="hover:text-slate-300 transition-colors">Mentions Légales</a>
-            <a href="#rgpd" className="hover:text-slate-300 transition-colors">Politique RGPD</a>
-            <a href="#tarifs" className="hover:text-slate-300 transition-colors">CGV / CGU</a>
+            <a href="/politique-confidentialite.html" className="hover:text-slate-300 transition-colors">Politique de confidentialité</a>
+            <a href="mailto:contact@appreciation.fr" className="hover:text-slate-300 transition-colors">contact@appreciation.fr</a>
+            <span>Mentions légales et CGV à venir</span>
           </div>
           <p className="flex items-center gap-1">
-            Conçu avec <Heart className="w-3 h-3 text-red-500 fill-red-500" /> pour les enseignants français.
+            Conçu avec <Heart className="w-3 h-3 text-red-500 fill-red-500" /> pour les enseignants français. Éditeur et médiateur : voir les mentions légales (à paraître).
           </p>
         </div>
 

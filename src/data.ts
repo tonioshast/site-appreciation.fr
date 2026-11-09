@@ -121,23 +121,27 @@ export const TESTIMONIALS: Testimonial[] = [
 
 export const FAQS: FaqItem[] = [
   {
-    question: "Comment apprecIAtion respecte-t-il les règles du RGPD ?",
-    answer: "Le logiciel est conçu selon le principe de 'Privacy by Design'. Aucune donnée d'identité d'élève n'est requise. Seuls les prénoms, les moyennes et vos critères d'observation (items) sont transmis à l'API française souveraine Mistral AI via des tunnels cryptés et sécurisés. Les serveurs de Mistral AI sont hébergés en France et en Europe, conformément aux circulaires du Ministère de l'Éducation Nationale. Aucun stockage persistant des élèves n'est effectué à l'extérieur de votre machine."
+    question: "Comment apprecIAtion protège-t-il les données des élèves ?",
+    answer: "Le prénom est remplacé par un pseudonyme avant tout envoi, et le nom de famille n'est jamais lu ni transmis. Les notes chiffrées, les dates de naissance et les identifiants de compte ne sortent pas du navigateur. Les appréciations, elles, sont transmises à notre relais puis à Mistral pour être reformulées : c'est ce qui produit la proposition de texte. Le détail complet figure dans notre politique de confidentialité."
   },
   {
     question: "Le logiciel nécessite-t-il un abonnement ou un paiement unique ?",
-    answer: "La licence individuelle enseignant est disponible sous forme d'achat unique ou d'abonnement annuel très accessible (remboursable via vos frais réels ou crédits d'équipement enseignant). Nous proposons également des licences d'établissement pour équiper l'ensemble d'un collège ou d'un lycée."
+    answer: "Un paiement unique, sans abonnement. Vous réglez une fois, et la licence est valable pour l'année scolaire en cours : aucun prélèvement récurrent, aucune carte enregistrée, rien à résilier. Pour l'année suivante, il suffit de reprendre une licence si vous souhaitez continuer."
   },
   {
-    question: "Comment le logiciel s'intègre-t-il à Pronote ou ÉcoleDirecte ?",
-    answer: "Il s'intègre sous forme d'un petit volet flottant très discret ou par un système de copier-coller intelligent accéléré. Comme le montre l'interface inspirée d'ed-panels.js, vous naviguez d'un élève à l'autre d'un simple clic et appliquez la version choisie. Le texte est instantanément collé dans le champ de saisie de votre navigateur, vous épargnant des milliers de clics superflus."
+    question: "Comment le logiciel s'intègre-t-il à École Directe ?",
+    answer: "Il s'installe comme une extension de navigateur et se présente sous la forme d'un volet léger posé sur la page École Directe que vous utilisez déjà. Vous n'avez ni export à produire, ni double saisie à faire. La prise en charge de Pronote est en cours de développement."
   },
   {
-    question: "Puis-je l'installer sur plusieurs ordinateurs ?",
-    answer: "Oui. Avec votre licence individuelle, vous pouvez installer et activer le logiciel sur votre ordinateur personnel à la maison (Windows, Mac ou Linux) et sur l'ordinateur portable fourni par votre établissement ou votre académie."
+    question: "Sur quels ordinateurs puis-je l'installer ?",
+    answer: "L'extension s'installe depuis un fichier, dans Firefox, Chrome, Edge et Safari, sous Windows, macOS et Linux. Le paquet se trouve dans votre espace client, immédiatement après le paiement. Installation en une dizaine de secondes."
   },
   {
     question: "Puis-je personnaliser entièrement la grille de critères ?",
-    answer: "Absolument. Vous pouvez ajouter, modifier ou supprimer des colonnes thématiques (Travail, Comportement, Méthode, Devoirs...) et enregistrer autant de profils de grilles d'évaluation que vous le souhaitez (par classe, par niveau ou par matière)."
+    answer: "Oui. Vous modifiez vos critères thématiques matière par matière, et l'outil s'appuie sur ceux que vous avez définis — pas sur une grille imposée."
+  },
+  {
+    question: "Que se passe-t-il à la fin de l'année scolaire ?",
+    answer: "La licence s'arrête d'elle-même : il n'y a pas de reconduction tacite, donc rien à résilier et aucun prélèvement surprise. Vos listes d'élèves et vos corrections, elles, restent dans votre navigateur ; rien ne disparaît. Si vous reprenez une licence l'année suivante, vous retrouvez votre travail en place."
   }
 ];
