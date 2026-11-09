@@ -915,78 +915,21 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
                   </div>
                 </div>
 
-                {/* Download Section for all platforms */}
-                <div className="bg-gradient-to-br from-indigo-950/40 via-slate-950 to-slate-950 p-5 rounded-xl border border-indigo-500/20 space-y-4">
+                <div className="bg-gradient-to-br from-indigo-950/40 via-slate-950 to-slate-950 p-5 rounded-xl border border-indigo-500/20 space-y-3">
                   <div className="flex items-center gap-2 text-indigo-400 font-bold text-sm">
-                    <Download className="w-5 h-5" />
-                    <span>Télécharger votre application apprecIAtion</span>
+                    <User className="w-5 h-5" />
+                    <span>Récupérer l'extension</span>
                   </div>
-                  
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    Sélectionnez la version correspondant à votre ordinateur pour installer l'application :
+                    L'extension se télécharge uniquement depuis l'espace <strong className="text-white">Mon Compte</strong>, onglet <strong className="text-white">Téléchargements</strong> (Pronote ou ÉcoleDirecte, selon votre ENT).
+                    Connectez-vous avec votre e-mail et l'identifiant unique ci-dessus (il sert aussi de mot de passe).
                   </p>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <a
-                      href="/assets/apprecIAtion_setup.msi"
-                      download="apprecIAtion_setup.msi"
-                      className="p-3.5 bg-slate-900/80 hover:bg-slate-850 border border-slate-800 hover:border-blue-500/40 rounded-xl text-left transition-all flex flex-col justify-between group cursor-pointer"
-                    >
-                      <div>
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-xs font-bold text-white uppercase font-display">Windows</span>
-                          <Laptop className="w-4 h-4 text-blue-400" />
-                        </div>
-                        <p className="text-[10px] text-slate-400">Pour PC Windows (.msi)</p>
-                      </div>
-                      <span className="mt-3 text-[11px] font-semibold text-blue-400 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-                        <span>Télécharger</span>
-                        <Download className="w-3.5 h-3.5" />
-                      </span>
-                    </a>
-
-                    <a
-                      href="/assets/apprecIAtion_universal.dmg"
-                      download="apprecIAtion_universal.dmg"
-                      className="p-3.5 bg-slate-900/80 hover:bg-slate-850 border border-slate-800 hover:border-blue-500/40 rounded-xl text-left transition-all flex flex-col justify-between group cursor-pointer"
-                    >
-                      <div>
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-xs font-bold text-white uppercase font-display">macOS</span>
-                          <Laptop className="w-4 h-4 text-blue-400" />
-                        </div>
-                        <p className="text-[10px] text-slate-400">Pour Mac Intel & Apple (.dmg)</p>
-                      </div>
-                      <span className="mt-3 text-[11px] font-semibold text-blue-400 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-                        <span>Télécharger</span>
-                        <Download className="w-3.5 h-3.5" />
-                      </span>
-                    </a>
-
-                    <a
-                      href="/assets/apprecIAtion_linux.zip"
-                      download="apprecIAtion_linux.zip"
-                      className="p-3.5 bg-slate-900/80 hover:bg-slate-850 border border-slate-800 hover:border-blue-500/40 rounded-xl text-left transition-all flex flex-col justify-between group cursor-pointer"
-                    >
-                      <div>
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-xs font-bold text-white uppercase font-display">Linux</span>
-                          <Laptop className="w-4 h-4 text-blue-400" />
-                        </div>
-                        <p className="text-[10px] text-slate-400">Pour Linux (.zip)</p>
-                      </div>
-                      <span className="mt-3 text-[11px] font-semibold text-blue-400 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-                        <span>Télécharger</span>
-                        <Download className="w-3.5 h-3.5" />
-                      </span>
-                    </a>
-                  </div>
                 </div>
 
                 <div className="flex gap-2.5 items-center text-xs bg-slate-950 p-3.5 rounded-lg border border-slate-850">
                   <FileText className="w-5 h-5 text-blue-400 shrink-0" />
                   <p className="text-slate-400 leading-relaxed">
-                    Un récapitulatif contenant votre identifiant unique et les liens de téléchargement a été simulé vers <strong className="text-slate-200">{buyerEmail}</strong>.
+                    Un récapitulatif contenant votre identifiant unique a été envoyé vers <strong className="text-slate-200">{buyerEmail}</strong>.
                   </p>
                 </div>
 
