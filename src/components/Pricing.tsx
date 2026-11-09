@@ -569,7 +569,8 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
           </div>
 
           <p className="text-center text-xs text-slate-500 mt-8 max-w-2xl mx-auto leading-relaxed">
-            Prix en euros. TVA non applicable, article 293 B du CGI. Paiement unique, aucun prélèvement récurrent. Conditions de vente et droit de rétractation : voir les CGV (page à venir).
+            Prix en euros. TVA non applicable, article 293 B du CGI. Paiement unique, aucun prélèvement récurrent. Conditions de vente et droit de rétractation :{" "}
+            <a href="/cgv.html" className="text-blue-400 hover:text-blue-300">voir les CGV</a>.
           </p>
           <p className="text-center text-xs text-slate-400 mt-3">
             Vous êtes un établissement ? Une licence collective est possible sur devis —{" "}
