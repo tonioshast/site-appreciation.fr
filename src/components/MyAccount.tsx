@@ -1679,18 +1679,6 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
               </button>
 
               <button
-                onClick={() => setActiveTab("downloads")}
-                className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-left transition-colors cursor-pointer ${
-                  activeTab === "downloads" 
-                    ? "bg-blue-500/10 text-blue-400 border border-blue-500/25 font-semibold" 
-                    : "text-slate-400 hover:text-white hover:bg-slate-900 border border-transparent"
-                }`}
-              >
-                <Download className="w-4 h-4 shrink-0" />
-                <span>Téléchargements</span>
-              </button>
-
-              <button
                 onClick={() => setActiveTab("installation")}
                 className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-left transition-colors cursor-pointer ${
                   activeTab === "installation" 
@@ -1700,6 +1688,18 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
               >
                 <Monitor className="w-4 h-4 shrink-0" />
                 <span>Installation de l'extension</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab("downloads")}
+                className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-left transition-colors cursor-pointer ${
+                  activeTab === "downloads" 
+                    ? "bg-blue-500/10 text-blue-400 border border-blue-500/25 font-semibold" 
+                    : "text-slate-400 hover:text-white hover:bg-slate-900 border border-transparent"
+                }`}
+              >
+                <Download className="w-4 h-4 shrink-0" />
+                <span>Téléchargements</span>
               </button>
 
               <button
@@ -1966,7 +1966,7 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
                 <div>
                   <h3 className="text-base font-bold text-white font-display">Téléchargement de l'extension</h3>
                   <p className="text-xs text-slate-400 mt-1">
-                    Paquets <strong className="text-slate-300">signés</strong> pour {extPack.label}. Même procédure d'installation ; seuls les fichiers changent.
+                    Paquets signés <strong className="text-slate-300">{extPack.label}</strong> pour Firefox et Safari. Chrome et Edge s'installent depuis le Chrome Web Store (onglet Installation).
                   </p>
                 </div>
 
@@ -1991,24 +1991,7 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="bg-slate-900/40 p-4 rounded-xl border border-slate-850 flex flex-col justify-between space-y-3">
-                    <div>
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-400 mb-1">Chrome & Edge</p>
-                      <p className="text-xs font-bold text-white">Paquet Chromium</p>
-                      <p className="text-[10px] text-slate-500 font-mono mt-1">{extPack.chrome}</p>
-                      <p className="text-[11px] text-slate-400 mt-2 leading-relaxed">Fichier .zip. À charger depuis chrome://extensions ou edge://extensions.</p>
-                    </div>
-                    <a
-                      href={extFileUrl(extPack.chrome)}
-                      download={extPack.chrome}
-                      className="w-full bg-slate-950 hover:bg-slate-900 text-slate-300 hover:text-white border border-slate-850 hover:border-slate-800 p-2 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                      <span>Télécharger</span>
-                    </a>
-                  </div>
-
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="bg-slate-900/40 p-4 rounded-xl border border-slate-850 flex flex-col justify-between space-y-3">
                     <div>
                       <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-400 mb-1">Firefox</p>
@@ -2063,7 +2046,7 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
                 <div>
                   <h3 className="text-base font-bold text-white font-display">Installation de l'extension</h3>
                   <p className="text-xs text-slate-400 mt-1">
-                    Extension signée pour <strong className="text-slate-300">{extPack.label}</strong>. Même gestes d'installation ; le fichier vient de Téléchargements (bascule Pronote / ÉcoleDirecte).
+                    Chrome et Edge : Chrome Web Store (École Directe et Pronote). Firefox et Safari : fichier dans Téléchargements.
                   </p>
                 </div>
 
@@ -2130,41 +2113,39 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
                       <Globe className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
                       <div>
                         <span className="font-bold text-white block mb-0.5">Chrome et Microsoft Edge</span>
-                        Même moteur (Chromium). Fichier {extPack.label} : <code className="text-blue-300 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">{extPack.chrome}</code> (dossier <code className="font-mono text-blue-300">/assets/{extPack.dir}/</code>).
+                        Extension signée Google, pour École Directe et Pronote. Pas de fichier à télécharger ici : installation depuis le Chrome Web Store.
                       </div>
                     </div>
                     <div className="space-y-3 text-xs">
                       <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
                         <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">1</span>
                         <div className="space-y-1">
-                          <p className="text-white font-bold">Télécharger le paquet signé</p>
-                          <p className="text-slate-400 leading-relaxed">Onglet <strong className="text-slate-300">Téléchargements</strong> → fichier Chrome / Edge. Conservez-le (clé USB ou dossier personnel).</p>
+                          <p className="text-white font-bold">Ouvrir la fiche Chrome Web Store</p>
+                          <p className="text-slate-400 leading-relaxed">
+                            Chrome : cliquez le bouton ci-dessous. Edge : ouvrez le même lien (Edge accepte les extensions du Chrome Web Store).
+                          </p>
+                          <a
+                            href="https://chromewebstore.google.com/detail/pcmomekepohojnngeknephngjangilpg"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 mt-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-[11px] px-4 py-2 rounded-lg"
+                          >
+                            Installer depuis le Chrome Web Store
+                          </a>
                         </div>
                       </div>
                       <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
                         <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">2</span>
                         <div className="space-y-1">
-                          <p className="text-white font-bold">Ouvrir la page des extensions</p>
-                          <p className="text-slate-400 leading-relaxed">
-                            Chrome : barre d'adresse <code className="text-blue-300 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">chrome://extensions</code><br />
-                            Edge : <code className="text-blue-300 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">edge://extensions</code>
-                          </p>
+                          <p className="text-white font-bold">Ajouter l'extension</p>
+                          <p className="text-slate-400 leading-relaxed">Cliquez sur <strong className="text-slate-300">Ajouter à Chrome</strong> (ou « Obtenir » dans Edge), puis confirmez.</p>
                         </div>
                       </div>
                       <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
                         <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">3</span>
                         <div className="space-y-1">
-                          <p className="text-white font-bold">Installer le fichier signé</p>
-                          <p className="text-slate-400 leading-relaxed">
-                            Glissez le <code className="font-mono text-blue-300">.crx</code> sur la page des extensions. S'il s'agit d'un <code className="font-mono text-blue-300">.zip</code> : décompressez-le, activez le <strong className="text-slate-300">mode développeur</strong> (en haut à droite), puis <strong className="text-slate-300">Charger l'extension non empaquetée</strong> et choisissez le dossier extrait.
-                          </p>
-                        </div>
-                      </div>
-                      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                        <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">4</span>
-                        <div className="space-y-1">
-                          <p className="text-white font-bold">Épingler et utiliser</p>
-                          <p className="text-slate-400 leading-relaxed">Épinglez l'icône apprecIAtion. Ouvrez {extPack.label} : le volet de l'assistant apparaît. Rien n'est écrit sur le disque de l'établissement hors le profil du navigateur.</p>
+                          <p className="text-white font-bold">Épingler et ouvrir l'ENT</p>
+                          <p className="text-slate-400 leading-relaxed">Épinglez l'icône apprecIAtion, puis ouvrez École Directe ou Pronote : le volet de l'assistant apparaît.</p>
                         </div>
                       </div>
                     </div>
