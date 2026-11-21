@@ -715,7 +715,7 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
                               setCodeSent(false);
                             }
                           }}
-                          placeholder="olivier.bertrand@ac-bordeaux.fr"
+                          placeholder="vous@exemple.fr"
                           className="flex-1 text-xs bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-60 disabled:cursor-not-allowed"
                         />
                         {!emailVerified && (
