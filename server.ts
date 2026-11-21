@@ -336,7 +336,7 @@ Rôles attendus pour chaque version :
 // API Route to register / update professor in PocketBase database
   app.post("/api/register-prof", async (req, res) => {
     try {
-      const { nom, prenom, email, systeme_exploitation, ent, identifiant_prof, etablissement, id_unique, expiration, version, mdp, plan, plan_name, pack } = req.body;
+      const { nom, prenom, email, ent, identifiant_prof, etablissement, id_unique, expiration, version, mdp, plan, plan_name, pack } = req.body;
 
       if (!nom || !prenom || !identifiant_prof || !etablissement) {
         return res.status(400).json({ error: "Le nom, le prénom, l'identifiant enseignant et l'établissement scolaire sont obligatoires." });
@@ -373,7 +373,6 @@ Rôles attendus pour chaque version :
         nom: nom || "",
         prenom: prenom || "",
         email: validEmail,
-        systeme_exploitation: systeme_exploitation || "",
         ent: ent || "",
         identifiant_prof: identifiant_prof || "",
         etablissement: etablissement || "",
@@ -1099,7 +1098,7 @@ Rôles attendus pour chaque version :
   // Stripe checkout session creation
   app.post("/api/create-checkout-session", async (req, res) => {
     try {
-      const { id_unique, plan_name, pack, email, prenom, nom, systeme_exploitation, ent, etablissement, identifiant_prof, mdp } = req.body;
+      const { id_unique, plan_name, pack, email, prenom, nom, ent, etablissement, identifiant_prof, mdp } = req.body;
       
       if (!id_unique || !plan_name) {
         return res.status(400).json({ error: "L'identifiant de la transaction et le nom du plan de licence sont requis." });
@@ -1159,7 +1158,7 @@ Rôles attendus pour chaque version :
           },
         ],
         mode: "payment",
-        success_url: `${origin}/?status=success&id_unique=${id_unique}&plan=${encodeURIComponent(plan_name)}&pack=${packVal}&email=${encodeURIComponent(email || "")}&prenom=${encodeURIComponent(prenom || "")}&nom=${encodeURIComponent(nom || "")}&os=${encodeURIComponent(systeme_exploitation || "")}&ent=${encodeURIComponent(ent || "")}&school=${encodeURIComponent(etablissement || "")}&identifiant_prof=${encodeURIComponent(identifiant_prof || "")}&mdp=${encodeURIComponent(mdp || "")}`,
+        success_url: `${origin}/?status=success&id_unique=${id_unique}&plan=${encodeURIComponent(plan_name)}&pack=${packVal}&email=${encodeURIComponent(email || "")}&prenom=${encodeURIComponent(prenom || "")}&nom=${encodeURIComponent(nom || "")}&ent=${encodeURIComponent(ent || "")}&school=${encodeURIComponent(etablissement || "")}&identifiant_prof=${encodeURIComponent(identifiant_prof || "")}&mdp=${encodeURIComponent(mdp || "")}`,
         cancel_url: `${origin}/?status=cancel`,
         metadata: {
           id_unique,
@@ -1168,7 +1167,6 @@ Rôles attendus pour chaque version :
           email,
           prenom,
           nom,
-          systeme_exploitation,
           ent,
           etablissement,
           identifiant_prof,
@@ -1186,7 +1184,7 @@ Rôles attendus pour chaque version :
   // Stripe checkout callback validation (marks subscription as active in DB)
   app.post("/api/validate-payment", async (req, res) => {
     try {
-      const { id_unique, nom, prenom, email, systeme_exploitation, ent, identifiant_prof, etablissement, version, mdp, expiration, compte_valide, nombre_licences, plan, plan_name, pack } = req.body;
+      const { id_unique, nom, prenom, email, ent, identifiant_prof, etablissement, version, mdp, expiration, compte_valide, nombre_licences, plan, plan_name, pack } = req.body;
       if (!id_unique) {
         return res.status(400).json({ error: "L'identifiant unique de la licence est requis." });
       }
@@ -1214,7 +1212,6 @@ Rôles attendus pour chaque version :
         nom: nom || "",
         prenom: prenom || "",
         email: validEmail,
-        systeme_exploitation: systeme_exploitation || "",
         ent: ent || "",
         identifiant_prof: identifiant_prof || "",
         etablissement: etablissement || "",
