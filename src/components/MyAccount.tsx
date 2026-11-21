@@ -1819,7 +1819,7 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-semibold text-slate-400 mb-1">E-mail de contact (non académique)</label>
+                        <label className="block text-xs font-semibold text-slate-400 mb-1">Adresse e-mail</label>
                         <input
                           type="email"
                           required
