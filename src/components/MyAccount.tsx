@@ -119,7 +119,7 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
   const [codeSent, setCodeSent] = useState(false);
 
   // Active dashboard tab state
-  const [activeTab, setActiveTab] = useState<"profile" | "downloads" | "installation" | "database">("profile");
+  const [activeTab, setActiveTab] = useState<"profile" | "installation" | "database">("profile");
 
   const [installBrowserTab, setInstallBrowserTab] = useState<"chromium" | "firefox" | "safari">("chromium");
   const [extEnt, setExtEnt] = useState<"pronote" | "ecoledirecte">(() =>
@@ -1691,18 +1691,6 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
               </button>
 
               <button
-                onClick={() => setActiveTab("downloads")}
-                className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-left transition-colors cursor-pointer ${
-                  activeTab === "downloads" 
-                    ? "bg-blue-500/10 text-blue-400 border border-blue-500/25 font-semibold" 
-                    : "text-slate-400 hover:text-white hover:bg-slate-900 border border-transparent"
-                }`}
-              >
-                <Download className="w-4 h-4 shrink-0" />
-                <span>Téléchargements</span>
-              </button>
-
-              <button
                 onClick={() => setActiveTab("database")}
                 className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-medium text-left transition-colors cursor-pointer ${
                   activeTab === "database" 
@@ -1959,94 +1947,14 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
             )}
 
             {/* =========================================================================
-               TAB 3: TÉLÉCHARGEMENTS EXTENSIONS SIGNÉES
-               ========================================================================= */}
-            {activeTab === "downloads" && (
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-base font-bold text-white font-display">Téléchargement de l'extension</h3>
-                  <p className="text-xs text-slate-400 mt-1">
-                    Paquets signés <strong className="text-slate-300">{extPack.label}</strong> pour Firefox et Safari. Chrome et Edge s'installent depuis le Chrome Web Store (onglet Installation).
-                  </p>
-                </div>
-
-                <div className="flex bg-slate-900/60 p-1 rounded-xl border border-slate-850 gap-1 w-full max-w-md">
-                  <button
-                    type="button"
-                    onClick={() => setExtEnt("pronote")}
-                    className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
-                      extEnt === "pronote" ? "bg-blue-600 text-white shadow-md" : "text-slate-400 hover:text-white"
-                    }`}
-                  >
-                    Pronote
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setExtEnt("ecoledirecte")}
-                    className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
-                      extEnt === "ecoledirecte" ? "bg-blue-600 text-white shadow-md" : "text-slate-400 hover:text-white"
-                    }`}
-                  >
-                    ÉcoleDirecte
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="bg-slate-900/40 p-4 rounded-xl border border-slate-850 flex flex-col justify-between space-y-3">
-                    <div>
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-400 mb-1">Firefox</p>
-                      <p className="text-xs font-bold text-white">Module signé Mozilla</p>
-                      <p className="text-[10px] text-slate-500 font-mono mt-1">{extPack.firefox}</p>
-                      <p className="text-[11px] text-slate-400 mt-2 leading-relaxed">Glisser-déposer sur Firefox, ou about:addons → installer depuis un fichier.</p>
-                    </div>
-                    <a
-                      href={extFileUrl(extPack.firefox)}
-                      download={extPack.firefox}
-                      className="w-full bg-slate-950 hover:bg-slate-900 text-slate-300 hover:text-white border border-slate-850 hover:border-slate-800 p-2 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                      <span>Télécharger</span>
-                    </a>
-                  </div>
-
-                  <div className="bg-slate-900/40 p-4 rounded-xl border border-slate-850 flex flex-col justify-between space-y-3">
-                    <div>
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-400 mb-1">Safari</p>
-                      <p className="text-xs font-bold text-white">Safari Web Extension</p>
-                      <p className="text-[10px] text-slate-500 font-mono mt-1">{extPack.safari}</p>
-                      <p className="text-[11px] text-slate-400 mt-2 leading-relaxed">Décompresser, ouvrir l'app une fois, puis cocher l'extension dans Safari → Réglages.</p>
-                    </div>
-                    <a
-                      href={extFileUrl(extPack.safari)}
-                      download={extPack.safari}
-                      className="w-full bg-slate-950 hover:bg-slate-900 text-slate-300 hover:text-white border border-slate-850 hover:border-slate-800 p-2 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                      <span>Télécharger</span>
-                    </a>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => setActiveTab("installation")}
-                  className="text-xs text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1 cursor-pointer bg-transparent border-none p-0"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                  Voir le protocole d'installation
-                </button>
-              </div>
-            )}
-
-            {/* =========================================================================
-               TAB 3.5: INSTALLATION DE L'EXTENSION (SIDELLOAD SIGNÉ)
+               TAB 3: INSTALLATION DE L'EXTENSION
                ========================================================================= */}
             {activeTab === "installation" && (
               <div className="space-y-6">
                 <div>
                   <h3 className="text-base font-bold text-white font-display">Installation de l'extension</h3>
                   <p className="text-xs text-slate-400 mt-1">
-                    Chrome et Edge : Chrome Web Store (École Directe et Pronote). Firefox et Safari : fichier dans Téléchargements.
+                    Choisissez votre ENT et votre navigateur. Chrome et Edge : Chrome Web Store. Firefox et Safari : téléchargez le fichier, puis suivez les deux étapes.
                   </p>
                 </div>
 
@@ -2138,14 +2046,7 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
                         <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">2</span>
                         <div className="space-y-1">
                           <p className="text-white font-bold">Ajouter l'extension</p>
-                          <p className="text-slate-400 leading-relaxed">Cliquez sur <strong className="text-slate-300">Ajouter à Chrome</strong> (ou « Obtenir » dans Edge), puis confirmez.</p>
-                        </div>
-                      </div>
-                      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                        <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">3</span>
-                        <div className="space-y-1">
-                          <p className="text-white font-bold">Épingler et ouvrir l'ENT</p>
-                          <p className="text-slate-400 leading-relaxed">Épinglez l'icône apprecIAtion, puis ouvrez École Directe ou Pronote : le volet de l'assistant apparaît.</p>
+                          <p className="text-slate-400 leading-relaxed">Cliquez sur <strong className="text-slate-300">Ajouter à Chrome</strong> (ou « Obtenir » dans Edge), puis confirmez. Ouvrez ensuite {extPack.label}.</p>
                         </div>
                       </div>
                     </div>
@@ -2165,32 +2066,33 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
                       <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
                         <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">1</span>
                         <div className="space-y-1">
-                          <p className="text-white font-bold">Télécharger le .xpi</p>
-                          <p className="text-slate-400 leading-relaxed">Depuis Téléchargements, enregistrez <code className="font-mono text-blue-300">{extPack.firefox}</code>.</p>
+                          <p className="text-white font-bold">Télécharger le fichier</p>
+                          <p className="text-slate-400 leading-relaxed">Enregistrez le module signé <code className="font-mono text-blue-300">{extPack.firefox}</code>.</p>
+                          <a
+                            href={extFileUrl(extPack.firefox)}
+                            download={extPack.firefox}
+                            className="inline-flex items-center gap-1.5 mt-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-[11px] px-4 py-2 rounded-lg"
+                          >
+                            <Download className="w-3.5 h-3.5" />
+                            Télécharger
+                          </a>
                         </div>
                       </div>
                       <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
                         <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">2</span>
                         <div className="space-y-1">
-                          <p className="text-white font-bold">Ouvrir le gestionnaire de modules</p>
-                          <p className="text-slate-400 leading-relaxed">Barre d'adresse : <code className="text-blue-300 font-mono text-[11px] bg-slate-950 px-1 py-0.5 rounded">about:addons</code> — ou menu ☰ → Extensions et thèmes.</p>
-                        </div>
-                      </div>
-                      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                        <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">3</span>
-                        <div className="space-y-1">
-                          <p className="text-white font-bold">Installer depuis un fichier</p>
+                          <p className="text-white font-bold">Ouvrir les modules complémentaires</p>
                           <p className="text-slate-400 leading-relaxed">
-                            Roue dentée → <strong className="text-slate-300">Installer un module depuis un fichier…</strong> → choisissez le <code className="font-mono text-blue-300">.xpi</code>.
-                            Vous pouvez aussi <strong className="text-slate-300">glisser-déposer</strong> le fichier sur la fenêtre Firefox. Confirmez « Ajouter ».
+                            Cliquez le lien ci-dessous (nouvel onglet), puis <strong className="text-slate-300">glissez le fichier .xpi</strong> dans la fenêtre Firefox, ou roue dentée → Installer un module depuis un fichier. Confirmez « Ajouter ».
                           </p>
-                        </div>
-                      </div>
-                      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                        <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">4</span>
-                        <div className="space-y-1">
-                          <p className="text-white font-bold">Autoriser et épingler</p>
-                          <p className="text-slate-400 leading-relaxed">Si Firefox demande des permissions, acceptez. Épinglez l'icône, puis ouvrez {extPack.label}.</p>
+                          <a
+                            href="about:addons"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 mt-2 bg-slate-800 hover:bg-slate-700 text-white font-semibold text-[11px] px-4 py-2 rounded-lg border border-slate-700"
+                          >
+                            Ouvrir about:addons
+                          </a>
                         </div>
                       </div>
                     </div>
@@ -2203,39 +2105,42 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
                       <Globe className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
                       <div>
                         <span className="font-bold text-white block mb-0.5">Safari (macOS)</span>
-                        Safari n'installe pas un zip brut : le paquet signé est une <strong className="text-white">app macOS</strong> (Safari Web Extension) à télécharger depuis Téléchargements, puis à activer dans Safari.
+                        Safari : paquet signé <strong className="text-white">app macOS</strong> ({extPack.label}). Deux étapes : télécharger, puis activer dans Réglages.
                       </div>
                     </div>
                     <div className="space-y-3 text-xs">
                       <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
                         <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">1</span>
                         <div className="space-y-1">
-                          <p className="text-white font-bold">Télécharger le paquet Safari</p>
-                          <p className="text-slate-400 leading-relaxed">Fichier <code className="font-mono text-blue-300">{extPack.safari}</code>. Décompressez-le si besoin.</p>
+                          <p className="text-white font-bold">Télécharger le fichier</p>
+                          <p className="text-slate-400 leading-relaxed">
+                            Fichier <code className="font-mono text-blue-300">{extPack.safari}</code>. Décompressez-le, puis ouvrez l'app une fois (clic droit → Ouvrir si macOS bloque).
+                          </p>
+                          <a
+                            href={extFileUrl(extPack.safari)}
+                            download={extPack.safari}
+                            className="inline-flex items-center gap-1.5 mt-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-[11px] px-4 py-2 rounded-lg"
+                          >
+                            <Download className="w-3.5 h-3.5" />
+                            Télécharger
+                          </a>
                         </div>
                       </div>
                       <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
                         <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">2</span>
                         <div className="space-y-1">
-                          <p className="text-white font-bold">Ouvrir l'app une première fois</p>
-                          <p className="text-slate-400 leading-relaxed">Double-cliquez l'application. Si macOS affiche Gatekeeper : clic droit → Ouvrir. Cette étape enregistre l'extension auprès de Safari.</p>
-                        </div>
-                      </div>
-                      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                        <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">3</span>
-                        <div className="space-y-1">
                           <p className="text-white font-bold">Activer dans Safari</p>
                           <p className="text-slate-400 leading-relaxed">
-                            Safari → Réglages → <strong className="text-slate-300">Extensions</strong> → cochez apprecIAtion.
-                            Au besoin : Réglages → Avancé → « Afficher les fonctionnalités pour les développeurs web », puis menu Développement → Autoriser les extensions non classées (uniquement si le paquet n'est pas encore notarié).
+                            Ouvrez les Réglages Extensions (nouvel onglet / Réglages macOS), puis cochez <strong className="text-slate-300">apprecIAtion</strong>.
                           </p>
-                        </div>
-                      </div>
-                      <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
-                        <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">4</span>
-                        <div className="space-y-1">
-                          <p className="text-white font-bold">Utiliser sur {extPack.label}</p>
-                          <p className="text-slate-400 leading-relaxed">Rechargez l'onglet {extPack.label}. L'icône apparaît dans la barre d'outils Safari.</p>
+                          <a
+                            href="x-apple.systempreferences:com.apple.Safari-Settings.extension"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 mt-2 bg-slate-800 hover:bg-slate-700 text-white font-semibold text-[11px] px-4 py-2 rounded-lg border border-slate-700"
+                          >
+                            Ouvrir Réglages → Extensions
+                          </a>
                         </div>
                       </div>
                     </div>
