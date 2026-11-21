@@ -2082,9 +2082,21 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
                       <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
                         <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">2</span>
                         <div className="space-y-1">
-                          <p className="text-white font-bold">Ouvrir le gestionnaire d'extensions</p>
+                          <p className="text-white font-bold">Ouvrir le gestionnaire d'extensions Firefox</p>
                           <p className="text-slate-400 leading-relaxed">
-                            Firefox n'autorise pas un site à ouvrir <code className="text-blue-300 font-mono">about:addons</code>. Appuyez sur <strong className="text-slate-300">Ctrl+Maj+A</strong> (Mac : <strong className="text-slate-300">⌘⇧A</strong>), ou cliquez le bouton pour copier l'adresse et la coller dans la barre d'adresse. Puis <strong className="text-slate-300">glissez le fichier .xpi</strong> dans la fenêtre.
+                            Un site web ne peut pas ouvrir ce gestionnaire à votre place. Deux façons :
+                          </p>
+                          <ul className="list-disc pl-4 text-slate-400 leading-relaxed space-y-1.5 mt-1">
+                            <li>
+                              Raccourci clavier : <strong className="text-slate-200">Ctrl+Maj+A</strong>
+                              <span className="text-slate-500"> (Mac : </span><strong className="text-slate-200">⌘⇧A</strong><span className="text-slate-500">)</span>
+                            </li>
+                            <li>
+                              Cliquez le bouton : il <strong className="text-slate-200">copie</strong> <code className="text-blue-300 font-mono">about:addons</code>. Cliquez dans la barre d'adresse de Firefox, collez (<strong className="text-slate-200">Ctrl+V</strong>), puis Entrée.
+                            </li>
+                          </ul>
+                          <p className="text-slate-400 leading-relaxed mt-1.5">
+                            Ensuite, <strong className="text-slate-300">glissez le fichier .xpi</strong> dans cette fenêtre et confirmez « Ajouter ».
                           </p>
                           <button
                             type="button"
@@ -2102,7 +2114,7 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
                           </button>
                           {addonsHint && (
                             <p className="text-[11px] text-emerald-400 mt-2">
-                              Adresse copiée. Collez-la dans la barre d'adresse (Ctrl+L puis Ctrl+V), ou utilisez Ctrl+Maj+A.
+                              Copié. Collez dans la barre d'adresse Firefox (Ctrl+V) puis Entrée — ou utilisez Ctrl+Maj+A.
                             </p>
                           )}
                         </div>
