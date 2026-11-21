@@ -1603,7 +1603,7 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
 
           <form onSubmit={handleLoginSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">Adresse e-mail académique *</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1.5">Adresse e-mail *</label>
               <div className="relative">
                 <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                 <input
@@ -1611,7 +1611,7 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="nom.prenom@ac-academie.fr"
+                  placeholder="vous@exemple.fr"
                   className="w-full text-xs pl-10 bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 />
               </div>
@@ -1819,7 +1819,7 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-semibold text-slate-400 mb-1">E-mail de contact (non académique)</label>
+                        <label className="block text-xs font-semibold text-slate-400 mb-1">Adresse e-mail</label>
                         <input
                           type="email"
                           required
