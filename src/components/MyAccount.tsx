@@ -99,7 +99,6 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
   const [editEmail, setEditEmail] = useState(user?.email || "");
   const [editMdp, setEditMdp] = useState("");
   const [editEnt, setEditEnt] = useState(user?.ent || "");
-  const [editOs, setEditOs] = useState(user?.systeme_exploitation || "");
   const [editIdentifiantProf, setEditIdentifiantProf] = useState(user?.identifiant_prof || "");
   const [editEtablissement, setEditEtablissement] = useState(user?.etablissement || "");
 
@@ -145,6 +144,20 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
   } as const;
   const extPack = extPacks[extEnt];
   const extFileUrl = (file: string) => `/assets/${extPack.dir}/${file}`;
+  const profileComplete = Boolean(
+    user &&
+      String(user.nom || "").trim() &&
+      String(user.prenom || "").trim() &&
+      String(user.email || "").trim() &&
+      String(user.etablissement || "").trim() &&
+      String(user.ent || "").trim()
+  );
+  const blinkDot = (
+    <span className="relative flex h-2 w-2 shrink-0" aria-hidden>
+      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
+      <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-400" />
+    </span>
+  );
 
   // Sync state if user changes
   React.useEffect(() => {
@@ -154,7 +167,6 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
       setEditEmail(user.email || "");
       setEditMdp("");
       setEditEnt(user.ent || "");
-      setEditOs(user.systeme_exploitation || "");
       setEditIdentifiantProf(user.identifiant_prof || "");
       setEditEtablissement(user.etablissement || "");
       setExtEnt((user.ent || "").toLowerCase().includes("pronote") ? "pronote" : "ecoledirecte");
@@ -1540,7 +1552,6 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
           email: editEmail,
           mdp: editMdp,
           ent: editEnt,
-          systeme_exploitation: editOs,
           identifiant_prof: editIdentifiantProf,
           etablissement: editEtablissement
         })
@@ -1675,6 +1686,7 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
                     : "text-slate-400 hover:text-white hover:bg-slate-900 border border-transparent"
                 }`}
               >
+                {!profileComplete && blinkDot}
                 <User className="w-4 h-4 shrink-0" />
                 <span>Mes Informations</span>
               </button>
@@ -1687,6 +1699,7 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
                     : "text-slate-400 hover:text-white hover:bg-slate-900 border border-transparent"
                 }`}
               >
+                {profileComplete && blinkDot}
                 <Monitor className="w-4 h-4 shrink-0" />
                 <span>Installation de l'extension</span>
               </button>
@@ -1899,22 +1912,21 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-semibold text-slate-400 mb-1">Système d'exploitation principal</label>
-                        <select
-                          value={editOs}
-                          onChange={(e) => setEditOs(e.target.value as any)}
-                          className="w-full text-xs bg-slate-950 border border-slate-850 rounded-lg p-2.5 text-white focus:border-blue-500 focus:outline-none"
-                        >
-                          <option value="">-- Non spécifié --</option>
-                          <option value="windows">Windows (PC)</option>
-                          <option value="macos">macOS (Apple)</option>
-                          <option value="linux">Linux</option>
-                        </select>
+                        <label className="block text-xs font-semibold text-slate-400 mb-1">Nom de l'établissement</label>
+                        <input
+                          type="text"
+                          required
+                          value={editEtablissement}
+                          onChange={(e) => setEditEtablissement(e.target.value)}
+                          placeholder="Collège / lycée…"
+                          className="w-full text-xs bg-slate-950 border border-slate-850 rounded-lg p-2.5 text-white focus:border-blue-500 focus:outline-none placeholder:text-slate-600"
+                        />
                       </div>
                       <div>
                         <label className="block text-xs font-semibold text-slate-400 mb-1">Logiciel scolaire principal (ENT)</label>
                         <select
                           value={editEnt}
+                          required
                           onChange={(e) => setEditEnt(e.target.value)}
                           className="w-full text-xs bg-slate-950 border border-slate-850 rounded-lg p-2.5 text-white focus:border-blue-500 focus:outline-none"
                         >

@@ -66,7 +66,6 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
   const [checkoutStep, setCheckoutStep] = useState<1 | 2 | 3>(1);
   const [buyerLastName, setBuyerLastName] = useState("");
   const [buyerFirstName, setBuyerFirstName] = useState("");
-  const [buyerOs, setBuyerOs] = useState<"" | "windows" | "macos" | "linux">("");
   const [buyerName, setBuyerName] = useState("");
   const [buyerEmail, setBuyerEmail] = useState("");
   const [buyerSchool, setBuyerSchool] = useState("");
@@ -188,7 +187,6 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
       const decodedPrenom = query.get("prenom") ? decodeURIComponent(query.get("prenom")!) : "";
       const decodedNom = query.get("nom") ? decodeURIComponent(query.get("nom")!) : "";
       const decodedEmail = query.get("email") ? decodeURIComponent(query.get("email")!) : "";
-      const decodedOs = (query.get("os") as any) || "";
       const decodedEnt = (query.get("ent") as any) || "";
       const decodedSchool = query.get("school") ? decodeURIComponent(query.get("school")!) : "";
       const decodedIdentifiantProf = query.get("identifiant_prof") ? decodeURIComponent(query.get("identifiant_prof")!) : "";
@@ -197,7 +195,6 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
       setBuyerFirstName(decodedPrenom);
       setBuyerLastName(decodedNom);
       setBuyerEmail(decodedEmail);
-      setBuyerOs(decodedOs);
       setSelectedInterface(decodedEnt);
       setBuyerSchool(decodedSchool);
       setBuyerName(decodedIdentifiantProf);
@@ -218,7 +215,6 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
           nom: decodedNom,
           prenom: decodedPrenom,
           email: decodedEmail,
-          systeme_exploitation: decodedOs,
           ent: decodedEnt,
           identifiant_prof: decodedIdentifiantProf,
           etablissement: decodedSchool,
@@ -403,7 +399,6 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
           nombre_licences: 1,
           prenom: "",
           nom: "",
-          systeme_exploitation: "",
           ent: "",
           etablissement: "",
           identifiant_prof: "",
@@ -447,7 +442,6 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
     setBuyerFirstName("");
     setBuyerPassword("");
     setBuyerPasswordConfirm("");
-    setBuyerOs("");
     setBuyerName("");
     setBuyerEmail("");
     setBuyerSchool("");
