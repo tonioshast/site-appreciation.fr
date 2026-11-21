@@ -494,7 +494,7 @@ Rôles attendus pour chaque version :
   // API Route to update professor profile
   app.post("/api/update-profile", async (req, res) => {
     try {
-      const { id_unique, nom, prenom, email, mdp, ent, systeme_exploitation, identifiant_prof, etablissement, pack } = req.body;
+      const { id_unique, nom, prenom, email, mdp, ent, identifiant_prof, etablissement, pack } = req.body;
 
       if (!id_unique) {
         return res.status(400).json({ error: "L'identifiant unique est requis pour la mise à jour." });
@@ -519,7 +519,6 @@ Rôles attendus pour chaque version :
           }
         }
         if (ent !== undefined) updateData.ent = ent;
-        if (systeme_exploitation !== undefined) updateData.systeme_exploitation = systeme_exploitation;
         if (identifiant_prof !== undefined) updateData.identifiant_prof = identifiant_prof;
         if (etablissement !== undefined) updateData.etablissement = etablissement;
         if (pack !== undefined) updateData.pack = Number(pack) || 1;
