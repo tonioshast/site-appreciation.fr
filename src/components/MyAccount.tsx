@@ -122,6 +122,7 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
   const [activeTab, setActiveTab] = useState<"profile" | "installation" | "database">("profile");
 
   const [installBrowserTab, setInstallBrowserTab] = useState<"chromium" | "firefox" | "safari">("chromium");
+  const [addonsHint, setAddonsHint] = useState(false);
   const [extEnt, setExtEnt] = useState<"pronote" | "ecoledirecte">(() =>
     (user?.ent || "").toLowerCase().includes("pronote") ? "pronote" : "ecoledirecte"
   );
@@ -2081,18 +2082,52 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
                       <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-850 flex items-start gap-3.5">
                         <span className="w-6 h-6 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 flex items-center justify-center font-mono font-bold shrink-0">2</span>
                         <div className="space-y-1">
-                          <p className="text-white font-bold">Ouvrir les modules complémentaires</p>
+                          <p className="text-white font-bold">Ouvrir le gestionnaire d'extensions Firefox</p>
                           <p className="text-slate-400 leading-relaxed">
-                            Cliquez le lien ci-dessous (nouvel onglet), puis <strong className="text-slate-300">glissez le fichier .xpi</strong> dans la fenêtre Firefox, ou roue dentée → Installer un module depuis un fichier. Confirmez « Ajouter ».
+                            Un site web ne peut pas ouvrir ce gestionnaire à votre place. Deux façons :
                           </p>
-                          <a
-                            href="about:addons"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 mt-2 bg-slate-800 hover:bg-slate-700 text-white font-semibold text-[11px] px-4 py-2 rounded-lg border border-slate-700"
+                          <ul className="list-disc pl-4 text-slate-400 leading-relaxed space-y-1.5 mt-1">
+                            <li>
+                              Raccourci clavier : <strong className="text-slate-200">Ctrl+Maj+A</strong>
+                              <span className="text-slate-500"> (Mac : </span><strong className="text-slate-200">⌘⇧A</strong><span className="text-slate-500">)</span>
+                            </li>
+                            <li>
+                              Cliquez le bouton : il <strong className="text-slate-200">copie</strong> <code className="text-blue-300 font-mono">about:addons</code>. Cliquez dans la barre d'adresse de Firefox, collez (<strong className="text-slate-200">Ctrl+V</strong>), puis Entrée.
+                            </li>
+                          </ul>
+                          <p className="text-slate-400 leading-relaxed mt-1.5">
+                            Une fois le gestionnaire ouvert, installez le fichier de deux façons :
+                          </p>
+                          <ul className="list-disc pl-4 text-slate-400 leading-relaxed space-y-1.5 mt-1">
+                            <li>
+                              <strong className="text-slate-200">Glissez-déposez</strong> le fichier <code className="text-blue-300 font-mono">.xpi</code> dans la fenêtre Firefox.
+                            </li>
+                            <li>
+                              Ou cliquez la <strong className="text-slate-200">roue dentée</strong> → <strong className="text-slate-200">Installer un module depuis un fichier…</strong> → choisissez le <code className="text-blue-300 font-mono">.xpi</code>.
+                            </li>
+                          </ul>
+                          <p className="text-slate-400 leading-relaxed mt-1.5">
+                            Confirmez « Ajouter ».
+                          </p>
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              try {
+                                await navigator.clipboard.writeText("about:addons");
+                              } catch {
+                                /* ignore */
+                              }
+                              setAddonsHint(true);
+                            }}
+                            className="inline-flex items-center gap-1.5 mt-2 bg-slate-800 hover:bg-slate-700 text-white font-semibold text-[11px] px-4 py-2 rounded-lg border border-slate-700 cursor-pointer"
                           >
-                            Ouvrir about:addons
-                          </a>
+                            Copier about:addons
+                          </button>
+                          {addonsHint && (
+                            <p className="text-[11px] text-emerald-400 mt-2">
+                              Copié. Collez dans la barre d'adresse Firefox (Ctrl+V) puis Entrée — ou utilisez Ctrl+Maj+A.
+                            </p>
+                          )}
                         </div>
                       </div>
                     </div>
