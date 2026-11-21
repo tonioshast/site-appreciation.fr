@@ -2096,7 +2096,18 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
                             </li>
                           </ul>
                           <p className="text-slate-400 leading-relaxed mt-1.5">
-                            Ensuite, <strong className="text-slate-300">glissez le fichier .xpi</strong> dans cette fenêtre et confirmez « Ajouter ».
+                            Une fois le gestionnaire ouvert, installez le fichier de deux façons :
+                          </p>
+                          <ul className="list-disc pl-4 text-slate-400 leading-relaxed space-y-1.5 mt-1">
+                            <li>
+                              <strong className="text-slate-200">Glissez-déposez</strong> le fichier <code className="text-blue-300 font-mono">.xpi</code> dans la fenêtre Firefox.
+                            </li>
+                            <li>
+                              Ou cliquez la <strong className="text-slate-200">roue dentée</strong> → <strong className="text-slate-200">Installer un module depuis un fichier…</strong> → choisissez le <code className="text-blue-300 font-mono">.xpi</code>.
+                            </li>
+                          </ul>
+                          <p className="text-slate-400 leading-relaxed mt-1.5">
+                            Confirmez « Ajouter ».
                           </p>
                           <button
                             type="button"
