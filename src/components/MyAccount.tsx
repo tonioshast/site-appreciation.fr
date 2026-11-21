@@ -1821,7 +1821,7 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-semibold text-slate-400 mb-1">Adresse e-mail</label>
+                        <label className="block text-xs font-semibold text-slate-400 mb-1">Adresse e-mail (adresse de connexion)</label>
                         <input
                           type="email"
                           required
@@ -1829,6 +1829,9 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
                           onChange={(e) => setEditEmail(e.target.value)}
                           className="w-full text-xs bg-slate-950 border border-slate-850 rounded-lg p-2.5 text-white focus:border-blue-500 focus:outline-none"
                         />
+                        <p className="mt-1.5 text-[11px] text-amber-400/90 leading-relaxed">
+                          Important : cette adresse doit être la même que celle de votre compte École Directe ou Pronote (Mon compte dans l'ENT).
+                        </p>
                         {editEmail.trim().toLowerCase() !== (user?.email || "").trim().toLowerCase() && (
                           <div className="mt-2.5 p-3 bg-slate-900 border border-slate-800 rounded-xl space-y-2">
                             <p className="text-[11px] font-medium text-amber-400 flex items-center gap-1">
