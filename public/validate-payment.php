@@ -118,126 +118,63 @@ function envoyerEmailValidation($prenom, $nom, $email, $systeme_exploitation, $e
     $smtp_password = isset($env['SMTP_PASSWORD']) ? $env['SMTP_PASSWORD'] : 'Furets1979#!?';
     $smtp_from = !empty($env['SMTP_FROM']) ? $env['SMTP_FROM'] : (!empty($env['SMTP_USER']) && filter_var($env['SMTP_USER'], FILTER_VALIDATE_EMAIL) ? $env['SMTP_USER'] : 'contact@' . $domain);
 
-    $ent_label = $ent === 'pronote' ? 'PRONOTE' : ($ent === 'ecole_directe' ? 'EcoleDirecte' : htmlspecialchars($ent));
-    $os_label = ucfirst(htmlspecialchars($systeme_exploitation));
     $displayExpDate = format_date_fr($expiration);
+    $siteUrl = 'https://appreciation.fr';
+    $prenomNom = trim(($prenom ?: '') . ' ' . ($nom ?: ''));
+    $bonjour = $prenomNom !== '' ? ('Bonjour ' . $prenomNom . ',') : 'Bonjour,';
 
-    $intro_text = "Nous avons le plaisir de vous confirmer que votre paiement a bien été reçu. Votre licence définitive pour le logiciel <strong>apprecIAtion (Version " . htmlspecialchars($version) . ")</strong> est désormais entièrement <strong>activée et opérationnelle</strong>.";
-
-    // Version texte brut (Alternative Text)
-    $text_intro = "Nous avons le plaisir de vous confirmer que votre paiement a bien été reçu. Votre licence définitive pour le logiciel apprecIAtion (Version " . $version . ") est désormais entièrement activée et opérationnelle.";
-
-    $text = "Bonjour " . $prenom . " " . $nom . ",\n\n";
-    $text .= $text_intro . "\n\n";
-    $text .= "RÉCAPITULATIF DE VOTRE LICENCE ACTIVÉE :\n";
-    $text .= "----------------------------------------\n";
-    $text .= "- Titulaire : " . $prenom . " " . $nom . "\n";
-    $text .= "- E-mail de contact : " . $email . "\n";
-    $text .= "- Date d'expiration : " . $displayExpDate . "\n";
-    $text .= "- Système d'exploitation : " . $os_label . "\n";
-    $text .= "- Établissement : " . $etablissement . "\n";
-    $text .= "- Interface scolaire (ENT) : " . $ent_label . "\n";
-    $text .= "- Identifiant de liaison exact : " . $identifiant_prof . "\n";
-    $text .= "- Statut de la licence : Validée et Activée\n";
-    $text .= "- Votre Clé d'Activation Unique : " . $id_unique . "\n\n";
-    $text .= "⚠️ Rappel de liaison de l'extension :\n";
-    $text .= "Pour que la liaison automatique fonctionne, l'identifiant enseignant renseigné ci-dessus (" . $identifiant_prof . ") doit correspondre parfaitement au nom du compte connecté s'affichant dans votre espace " . $ent_label . " (majuscules, minuscules, accents et espaces compris).\n\n";
-    $text .= "Comment l'utiliser ?\n";
-    $text .= "Votre extension Chrome et l'application s'activeront instantanément en saisissant la clé d'activation ci-dessus.\n\n";
-    $text .= "apprecIAtion - Les commentaires scolaires réinventés intelligemment.\n";
-    $text .= "Cet e-mail automatique a été envoyé suite à votre saisie sur l'application. Merci de ne pas y répondre directement.";
+    $text = $bonjour . "\n\n";
+    $text .= "Votre paiement a bien été reçu. Votre licence apprecIAtion est activée.\n\n";
+    $text .= "Date d'expiration : " . $displayExpDate . "\n";
+    $text .= "Clé d'activation : " . $id_unique . "\n\n";
+    $text .= "Pour installer l'extension, connectez-vous à Mon compte sur " . $siteUrl . ", onglet Installation.\n";
+    $text .= "La clé ci-dessus sert aussi de mot de passe si vous n'en avez pas défini un autre.\n\n";
+    $text .= "apprecIAtion\n";
+    $text .= "Cet e-mail est automatique. Merci de ne pas y répondre.\n";
+    $text .= "Contact : contact@appreciation.fr";
 
     $html = '<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <title>' . htmlspecialchars($sujet) . '</title>
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; color: #334155; margin: 0; padding: 0; }
-    .wrapper { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
-    .header { background: linear-gradient(135deg, #10b981, #059669); padding: 32px; text-align: center; color: #ffffff; }
-    .header h1 { margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -0.025em; }
-    .header p { margin: 8px 0 0; font-size: 14px; opacity: 0.9; }
-    .content { padding: 32px; line-height: 1.6; }
-    .greeting { font-size: 18px; font-weight: 700; color: #1e293b; margin-bottom: 16px; }
-    .intro { font-size: 14px; color: #475569; margin-bottom: 24px; }
-    .card { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; margin-bottom: 24px; }
-    .card-title { font-weight: 700; font-size: 14px; color: #059669; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 16px; }
-    .info-table { width: 100%; border-collapse: collapse; }
-    .info-table td { padding: 8px 0; font-size: 13px; border-bottom: 1px solid #f1f5f9; }
-    .info-label { font-weight: 600; color: #64748b; width: 40%; }
-    .info-value { color: #0f172a; }
-    .id-box { background-color: #ecfdf5; border: 1px dashed #a7f3d0; color: #065f46; padding: 12px; border-radius: 8px; font-family: monospace; font-size: 15px; font-weight: 700; text-align: center; margin: 16px 0; letter-spacing: 0.05em; }
-    .status-badge { display: inline-block; background-color: #dcfce7; color: #15803d; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em; }
-    .warning-box { background-color: #fffbeb; border-left: 4px solid #f59e0b; padding: 16px; border-radius: 8px; margin-bottom: 24px; }
-    .warning-box p { margin: 0; font-size: 12px; color: #b45309; line-height: 1.5; }
-    .footer { background-color: #f8fafc; padding: 24px; border-top: 1px solid #e2e8f0; text-align: center; font-size: 12px; color: #64748b; }
-    .footer p { margin: 4px 0; }
-  </style>
 </head>
-<body>
-  <div class="wrapper">
-    <div class="header">
-      <h1>apprecIAtion</h1>
-      <p>Votre outil d\'aide à la rédaction des appréciations scolaires</p>
-    </div>
-    <div class="content">
-      <div class="greeting">Bonjour ' . htmlspecialchars($prenom) . ' ' . htmlspecialchars($nom) . ',</div>
-      <p class="intro">' . $intro_text . '</p>
-      
-      <div class="card">
-        <div class="card-title">Votre licence activée</div>
-        <table class="info-table">
+<body style="margin:0;padding:0;background-color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#e2e8f0;padding:32px 12px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #cbd5e1;">
           <tr>
-            <td class="info-label">Titulaire</td>
-            <td class="info-value"><strong>' . htmlspecialchars($prenom) . ' ' . htmlspecialchars($nom) . '</strong></td>
+            <td style="background-color:#0b0f19;padding:28px 32px;text-align:center;">
+              <div style="font-size:28px;font-weight:800;letter-spacing:-0.03em;line-height:1.2;">
+                <span style="color:#ffffff;">apprec</span><span style="color:#fbbf24;">IA</span><span style="color:#ffffff;">tion</span>
+              </div>
+              <p style="margin:8px 0 0;font-size:12px;color:#94a3b8;letter-spacing:0.08em;text-transform:uppercase;">Licence activée</p>
+            </td>
           </tr>
           <tr>
-            <td class="info-label">E-mail de contact</td>
-            <td class="info-value">' . htmlspecialchars($email) . '</td>
+            <td style="padding:32px;color:#334155;font-size:15px;line-height:1.6;">
+              <p style="margin:0 0 16px;font-size:18px;font-weight:700;color:#0f172a;">' . htmlspecialchars($bonjour) . '</p>
+              <p style="margin:0 0 24px;">Votre paiement a bien été reçu. Votre licence <strong>apprecIAtion</strong> est activée.</p>
+              <p style="margin:0 0 8px;font-size:13px;color:#64748b;">Date d\'expiration</p>
+              <p style="margin:0 0 20px;font-size:16px;font-weight:700;color:#0f172a;">' . htmlspecialchars($displayExpDate) . '</p>
+              <p style="margin:0 0 8px;font-size:13px;color:#64748b;">Clé d\'activation</p>
+              <p style="margin:0 0 24px;padding:14px;text-align:center;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:16px;font-weight:700;letter-spacing:0.04em;color:#065f46;background:#ecfdf5;border:1px dashed #6ee7b7;border-radius:10px;">' . htmlspecialchars($id_unique) . '</p>
+              <p style="margin:0 0 8px;"><strong>Installer l\'extension</strong></p>
+              <p style="margin:0;">Connectez-vous à <a href="' . htmlspecialchars($siteUrl) . '" style="color:#2563eb;font-weight:600;">Mon compte</a> sur appreciation.fr, onglet <strong>Installation</strong>.</p>
+              <p style="margin:12px 0 0;font-size:13px;color:#64748b;">La clé ci-dessus sert aussi de mot de passe si vous n\'en avez pas défini un autre.</p>
+            </td>
           </tr>
           <tr>
-            <td class="info-label">Date d\'expiration</td>
-            <td class="info-value"><strong>' . htmlspecialchars($displayExpDate) . '</strong></td>
-          </tr>
-          <tr>
-            <td class="info-label">Système d\'exploitation</td>
-            <td class="info-value">' . $os_label . '</td>
-          </tr>
-          <tr>
-            <td class="info-label">Établissement</td>
-            <td class="info-value">' . htmlspecialchars($etablissement) . '</td>
-          </tr>
-          <tr>
-            <td class="info-label">Interface scolaire (ENT)</td>
-            <td class="info-value">' . $ent_label . '</td>
-          </tr>
-          <tr>
-            <td class="info-label">Identifiant de liaison exact</td>
-            <td class="info-value" style="color: #059669; font-weight: bold;">' . htmlspecialchars($identifiant_prof) . '</td>
-          </tr>
-          <tr>
-            <td class="info-label">Statut de la licence</td>
-            <td class="info-value"><span class="status-badge">Validée et Activée</span></td>
+            <td style="background:#f8fafc;padding:20px 32px;text-align:center;font-size:12px;color:#64748b;border-top:1px solid #e2e8f0;">
+              <p style="margin:0 0 4px;"><strong style="color:#0f172a;">apprecIAtion</strong></p>
+              <p style="margin:0;">E-mail automatique — merci de ne pas y répondre. Contact : contact@appreciation.fr</p>
+            </td>
           </tr>
         </table>
-        
-        <p style="font-size: 13px; margin: 16px 0 8px; font-weight: 600; color: #334155;">Votre Clé d\'Activation Unique :</p>
-        <div class="id-box">' . htmlspecialchars($id_unique) . '</div>
-      </div>
- 
-      <div class="warning-box">
-        <p><strong>⚠️ Rappel de liaison de l\'extension :</strong> Pour que la liaison automatique fonctionne, l\'identifiant enseignant renseigné ci-dessus (<code>' . htmlspecialchars($identifiant_prof) . '</code>) doit correspondre <strong>parfaitement</strong> au nom du compte connecté s\'affichant dans votre espace ' . $ent_label . ' (majuscules, minuscules, accents et espaces compris).</p>
-      </div>
- 
-      <p class="intro" style="margin-bottom: 0;"><strong>Comment l\'utiliser ?</strong><br>
-      Votre extension Chrome ainsi que l\'application s\'activeront instantanément en saisissant la clé d\'activation ci-dessus.</p>
-    </div>
-    <div class="footer">
-      <p><strong>apprecIAtion</strong> - Les commentaires scolaires réinventés intelligemment.</p>
-      <p>Cet e-mail automatique a été envoyé suite à votre saisie sur l\'application. Merci de ne pas y répondre directement.</p>
-    </div>
-  </div>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>';
 
