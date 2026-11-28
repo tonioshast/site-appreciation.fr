@@ -1766,7 +1766,11 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
                   <div className="p-3 bg-slate-900/60 rounded-xl border border-slate-850">
                     <p className="text-[9px] text-slate-500 uppercase tracking-widest font-mono">Pack Licence</p>
                     <p className="text-xs font-bold text-slate-300 mt-1">
-                      {user.pack === "2" || user.pack === 2 ? "Pack 2 - Enseignant + PP" : "Pack 1 - Enseignant Matière"}
+                      {Number(user.pack) === 2
+                        ? "Matière + professeur principal"
+                        : Number(user.pack) === 3
+                          ? "Professeur principal"
+                          : "Enseignant matière"}
                     </p>
                   </div>
                   <div className="p-3 bg-slate-900/60 rounded-xl border border-slate-850">
@@ -2207,7 +2211,7 @@ export default function MyAccount({ user, onLogin, onLogout, onClose }: MyAccoun
               const rawItemsList = itemsList;
               const rawSyntheseList = promptsSyntheseList;
 
-              const isPack2 = Number(user?.pack) === 2 || user?.pack === "2" || user?.pack === 2;
+              const isPack2 = Number(user?.pack) === 2 || Number(user?.pack) === 3;
 
               // Filtered Prompts
               const filteredPrompts = rawPromptsList.filter((item) => {

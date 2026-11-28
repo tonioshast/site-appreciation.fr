@@ -277,7 +277,8 @@ Rôles attendus pour chaque version :
     const exp = getAdminConfigVar(["expiration", "expiration_date", "EXPIRATION_DATE"], "");
     const pack1 = getAdminConfigVar(["pack1", "PACK1"], "19.90");
     const pack2 = getAdminConfigVar(["pack2", "PACK2"], "29.90");
-    res.json({ expiration: exp, pack1, pack2 });
+    const pack3 = getAdminConfigVar(["pack3", "PACK3"], "10");
+    res.json({ expiration: exp, pack1, pack2, pack3 });
   });
 
   app.get("/api/expiration", (req, res) => {
@@ -322,13 +323,14 @@ Rôles attendus pour chaque version :
   function determinePackNumber(packInput?: any, planNameInput?: string): number {
     if (packInput !== undefined && packInput !== null && packInput !== "") {
       const num = Number(packInput);
-      if (num === 1 || num === 2) return num;
+      if (num === 1 || num === 2 || num === 3) return num;
     }
     if (planNameInput && typeof planNameInput === "string") {
       const lower = planNameInput.toLowerCase();
-      if (lower.includes("principal") || lower.includes("pp") || lower.includes("pack 2") || lower.includes("pack2")) {
-        return 2;
-      }
+      const hasMatiere = lower.includes("matière") || lower.includes("matiere");
+      const hasPrincipal = lower.includes("principal");
+      if (hasMatiere && hasPrincipal) return 2;
+      if (hasPrincipal) return 3;
     }
     return 1;
   }
@@ -1126,16 +1128,18 @@ Rôles attendus pour chaque version :
       // Determine amount in cents from pack1 and pack2 in .env
       const p1Raw = getAdminConfigVar(["pack1", "PACK1"], "19.90").replace(",", ".");
       const p2Raw = getAdminConfigVar(["pack2", "PACK2"], "29.90").replace(",", ".");
+      const p3Raw = getAdminConfigVar(["pack3", "PACK3"], "10").replace(",", ".");
       let pack1Cents = Math.round((parseFloat(p1Raw) || 19.90) * 100);
       let pack2Cents = Math.round((parseFloat(p2Raw) || 29.90) * 100);
+      let pack3Cents = Math.round((parseFloat(p3Raw) || 10) * 100);
 
       if (pack1Cents <= 0) pack1Cents = 1990;
       if (pack2Cents <= 0) pack2Cents = 2990;
+      if (pack3Cents <= 0) pack3Cents = 1000;
 
       let amount = pack1Cents;
-      if (packVal === 2 || plan_name.toLowerCase().includes("principal") || plan_name.toLowerCase().includes("pp")) {
-        amount = pack2Cents;
-      }
+      if (packVal === 2) amount = pack2Cents;
+      if (packVal === 3) amount = pack3Cents;
 
       const stripe = getStripeInstance();
       const origin = req.headers.origin || process.env.APP_URL || "http://localhost:3000";

@@ -45,4 +45,5 @@ echo json_encode([
     'expiration' => get_admin_config_var('expiration', ''),
     'pack1' => get_admin_config_var('pack1', '19.90'),
     'pack2' => get_admin_config_var('pack2', '29.90'),
+    'pack3' => get_admin_config_var('pack3', '10'),
 ], JSON_UNESCAPED_UNICODE);
