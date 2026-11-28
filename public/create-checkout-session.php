@@ -83,6 +83,7 @@ $ent = isset($data['ent']) ? trim($data['ent']) : '';
 $etablissement = isset($data['etablissement']) ? trim($data['etablissement']) : '';
 $identifiant_prof = isset($data['identifiant_prof']) ? trim($data['identifiant_prof']) : '';
 $mdp = isset($data['mdp']) ? trim($data['mdp']) : '';
+$packPosted = isset($data['pack']) ? intval($data['pack']) : 0;
 
 if (empty($id_unique) || empty($plan_name)) {
     http_response_code(400);
@@ -105,20 +106,35 @@ if (!empty($email)) {
     } catch (Exception $eProf) {}
 }
 
-// Détermination du montant en centimes d'euros depuis pack1 et pack2 dans le .env
+// Montants depuis pack1 / pack2 / pack3 dans le .env
 $p1Val = str_replace(',', '.', get_admin_config_var('pack1', '19.90'));
 $p2Val = str_replace(',', '.', get_admin_config_var('pack2', '29.90'));
+$p3Val = str_replace(',', '.', get_admin_config_var('pack3', '10'));
 
 $pack1Cents = (int) round(((float) $p1Val) * 100);
 $pack2Cents = (int) round(((float) $p2Val) * 100);
+$pack3Cents = (int) round(((float) $p3Val) * 100);
 
 if ($pack1Cents <= 0) $pack1Cents = 1990;
 if ($pack2Cents <= 0) $pack2Cents = 2990;
+if ($pack3Cents <= 0) $pack3Cents = 1000;
+
+$planLower = strtolower($plan_name);
+$hasMatiere = (strpos($planLower, 'matière') !== false || strpos($planLower, 'matiere') !== false);
+$hasPrincipal = (strpos($planLower, 'principal') !== false);
+if ($packPosted === 1 || $packPosted === 2 || $packPosted === 3) {
+    $packva = $packPosted;
+} elseif ($hasMatiere && $hasPrincipal) {
+    $packva = 2;
+} elseif ($hasPrincipal) {
+    $packva = 3;
+} else {
+    $packva = 1;
+}
 
 $amount = $pack1Cents;
-if (strpos(strtolower($plan_name), 'principal') !== false || strpos(strtolower($plan_name), 'pp') !== false) {
-    $amount = $pack2Cents;
-}
+if ($packva === 2) $amount = $pack2Cents;
+if ($packva === 3) $amount = $pack3Cents;
 
 // Récupération dynamique de l'origine de la page pour construire les liens de retour
 $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
@@ -132,7 +148,6 @@ curl_setopt($ch, CURLOPT_URL, 'https://api.stripe.com/v1/checkout/sessions');
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 curl_setopt($ch, CURLOPT_POST, 1);
 
-$packva = (strpos(strtolower($plan_name), 'principal') !== false || strpos(strtolower($plan_name), 'pp') !== false) ? 2 : 1;
 $success_url = $origin . '/?status=success&id_unique=' . $id_unique . '&plan=' . urlencode($plan_name) . '&pack=' . $packva . '&packva=' . $packva . '&email=' . urlencode($email) . '&prenom=' . urlencode($prenom) . '&nom=' . urlencode($nom) . '&os=' . urlencode($systeme_exploitation) . '&ent=' . urlencode($ent) . '&school=' . urlencode($etablissement) . '&identifiant_prof=' . urlencode($identifiant_prof) . '&mdp=' . urlencode($mdp);
 $cancel_url = $origin . '/?status=cancel';
 

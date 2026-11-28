@@ -40,6 +40,7 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
   const [configExpiration, setConfigExpiration] = useState<string>("");
   const [configPack1, setConfigPack1] = useState<string>("19.90");
   const [configPack2, setConfigPack2] = useState<string>("29.90");
+  const [configPack3, setConfigPack3] = useState<string>("10");
 
   useEffect(() => {
     fetch("/api/config")
@@ -49,6 +50,7 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
           if (data.expiration) setConfigExpiration(data.expiration);
           if (data.pack1) setConfigPack1(data.pack1);
           if (data.pack2) setConfigPack2(data.pack2);
+          if (data.pack3) setConfigPack3(data.pack3);
         }
       })
       .catch(() => {});
@@ -59,10 +61,15 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
   const [downloadFinished, setDownloadFinished] = useState(false);
 
   // Checkout modal state
-  const [checkoutPlan, setCheckoutPlan] = useState<{ name: string; price: string; features: string[] } | null>(null);
+  const [checkoutPlan, setCheckoutPlan] = useState<{ name: string; price: string; features: string[]; pack: 1 | 2 | 3 } | null>(null);
 
-  const isPPPlan = checkoutPlan ? (checkoutPlan.name.toLowerCase().includes("principal") || checkoutPlan.name.toLowerCase().includes("pp")) : false;
-  const currentCheckoutPrice = checkoutPlan ? (isPPPlan ? formatDisplayPrice(configPack2, "29.90") : formatDisplayPrice(configPack1, "19.90")) : "";
+  const checkoutPack = checkoutPlan?.pack ?? 1;
+  const currentCheckoutPrice =
+    checkoutPack === 2
+      ? formatDisplayPrice(configPack2, "29.90")
+      : checkoutPack === 3
+        ? formatDisplayPrice(configPack3, "10")
+        : formatDisplayPrice(configPack1, "19.90");
   const [checkoutStep, setCheckoutStep] = useState<1 | 2 | 3>(1);
   const [buyerLastName, setBuyerLastName] = useState("");
   const [buyerFirstName, setBuyerFirstName] = useState("");
@@ -172,16 +179,27 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
     
     if (status === "success" && id_unique) {
       // 1. Reconstitution du plan et des informations acheteur
-      const decodedPlan = plan ? decodeURIComponent(plan) : "Licence individuelle pack enseignant matière";
-      const isPP = decodedPlan.toLowerCase().includes("principal") || decodedPlan.toLowerCase().includes("pp");
-      const packValue = queryPack ? Number(queryPack) : (isPP ? 2 : 1);
+      const decodedPlan = plan ? decodeURIComponent(plan) : "Licence enseignant matière";
+      const n = queryPack ? Number(queryPack) : 1;
+      const packValue = (n === 2 || n === 3 ? n : 1) as 1 | 2 | 3;
+      const priceByPack =
+        packValue === 2
+          ? formatDisplayPrice(configPack2, "29.90")
+          : packValue === 3
+            ? formatDisplayPrice(configPack3, "10")
+            : formatDisplayPrice(configPack1, "19.90");
+      const featuresByPack =
+        packValue === 2
+          ? ["Toutes les fonctions matière", "Générateur de synthèses de conseils de classe", "Tableau bilan Conseils de classe"]
+          : packValue === 3
+            ? ["Générateur de synthèses de conseils de classe", "Tableau bilan Conseils de classe"]
+            : ["Nombre d'élèves illimité", "Rédacteur d'appréciations intelligent", "Saisie assistée École Directe", "Sauvegarde locale sécurisée (RGPD)"];
 
       setCheckoutPlan({
         name: decodedPlan,
-        price: isPP ? formatDisplayPrice(configPack2, "29.90") : formatDisplayPrice(configPack1, "19.90"),
-        features: isPP
-          ? ["Tout le pack enseignant matière", "Générateur de synthèses de conseils de classe (PP)", "Tableau bilan Conseils de classe"]
-          : ["Nombre d'élèves illimité", "Rédacteur d'appréciations intelligent", "Saisie assistée Pronote & EcoleDirecte", "Sauvegarde locale sécurisée (RGPD)"]
+        price: priceByPack,
+        features: featuresByPack,
+        pack: packValue
       });
 
       const decodedPrenom = query.get("prenom") ? decodeURIComponent(query.get("prenom")!) : "";
@@ -379,7 +397,7 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
       const clientGeneratedIdUnique = `ID-${randomPart()}-${randomPart()}-${randomPart()}`;
       const expDate = configExpiration;
 
-      const packValue = isPPPlan ? 2 : 1;
+      const packValue = checkoutPlan?.pack ?? 1;
 
       // 1. Création de la session d'achat sécurisée Stripe Checkout
       const checkoutResponse = await fetch("/api/create-checkout-session", {
@@ -488,13 +506,13 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
             Licences et Tarifications
           </h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
             
-            {/* Pack Enseignant Matière */}
+            {/* Enseignant matière */}
             <div className="bg-slate-900/40 border border-slate-800/60 rounded-2xl p-6 flex flex-col justify-between hover:border-slate-700/60 transition-all">
               <div>
-                <h4 className="text-slate-400 font-bold uppercase tracking-wider text-xs mb-1">Pour enseignant</h4>
-                <h5 className="text-white font-display font-bold text-2xl mb-4">Pack Enseignant Matière</h5>
+                <h4 className="text-slate-400 font-bold uppercase tracking-wider text-xs mb-1">Enseignant matière</h4>
+                <h5 className="text-white font-display font-bold text-2xl mb-4">apprecIAtion matière</h5>
                 <div className="flex items-baseline mb-6 border-b border-slate-850 pb-5">
                   <span className="text-4xl font-bold text-white">{formatPriceCard(configPack1, "19.90")}</span>
                   <span className="text-slate-500 text-xs ml-2">Achat unique · valable pour l'année scolaire</span>
@@ -524,9 +542,10 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
               </div>
               <button
                 onClick={() => setCheckoutPlan({
-                  name: "Licence individuelle pack enseignant matière",
+                  name: "Licence enseignant matière",
                   price: formatDisplayPrice(configPack1, "19.90"),
-                  features: ["Nombre d'élèves illimité", "Rédacteur d'appréciations intelligent", "Saisie assistée Pronote & EcoleDirecte", "Sauvegarde locale sécurisée (RGPD)"]
+                  pack: 1,
+                  features: ["Nombre d'élèves illimité", "Rédacteur d'appréciations intelligent", "Saisie assistée École Directe", "Sauvegarde locale sécurisée (RGPD)"]
                 })}
                 className="w-full bg-slate-850 hover:bg-slate-800 text-slate-300 font-semibold text-xs py-3 rounded-xl transition-all border border-slate-850 hover:border-slate-700 cursor-pointer"
               >
@@ -534,12 +553,53 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
               </button>
             </div>
 
-            {/* Pack Enseignant Matière + Professeur Principal - Recommended */}
+            {/* Professeur principal seul */}
+            <div className="bg-slate-900/40 border border-slate-800/60 rounded-2xl p-6 flex flex-col justify-between hover:border-slate-700/60 transition-all">
+              <div>
+                <h4 className="text-slate-400 font-bold uppercase tracking-wider text-xs mb-1">Professeur principal</h4>
+                <h5 className="text-white font-display font-bold text-2xl mb-4">apprecIAtion professeur principal</h5>
+                <div className="flex items-baseline mb-6 border-b border-slate-850 pb-5">
+                  <span className="text-4xl font-bold text-white">{formatPriceCard(configPack3, "10")}</span>
+                  <span className="text-slate-500 text-xs ml-2">Achat unique · valable pour l'année scolaire</span>
+                </div>
+                <ul className="space-y-3.5 text-xs text-slate-300 mb-8">
+                  <li className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span className="font-semibold text-white">Générateur de synthèses de conseils de classe</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span>Tableau bilan Conseils de classe</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span>Sans le rédacteur d'appréciations matière</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span>Mises à jour incluses pendant 1 an</span>
+                  </li>
+                </ul>
+              </div>
+              <button
+                onClick={() => setCheckoutPlan({
+                  name: "Licence professeur principal",
+                  price: formatDisplayPrice(configPack3, "10"),
+                  pack: 3,
+                  features: ["Générateur de synthèses de conseils de classe", "Tableau bilan Conseils de classe"]
+                })}
+                className="w-full bg-slate-850 hover:bg-slate-800 text-slate-300 font-semibold text-xs py-3 rounded-xl transition-all border border-slate-850 hover:border-slate-700 cursor-pointer"
+              >
+                Choisir cette licence
+              </button>
+            </div>
+
+            {/* Matière + Professeur Principal */}
             <div className="bg-slate-900/80 border-2 border-blue-500/80 rounded-2xl p-6 flex flex-col justify-between shadow-xl shadow-blue-500/5 relative">
               
               <div>
-                <h4 className="text-blue-400 font-bold uppercase tracking-wider text-xs mb-1">Pour enseignant et professeur principal</h4>
-                <h5 className="text-white font-display font-bold text-2xl mb-4">Pack Enseignant Matière + Professeur Principal</h5>
+                <h4 className="text-blue-400 font-bold uppercase tracking-wider text-xs mb-1">Enseignant matière et professeur principal</h4>
+                <h5 className="text-white font-display font-bold text-2xl mb-4">apprecIAtion matière + professeur principal</h5>
                 <div className="flex items-baseline mb-6 border-b border-slate-850 pb-5">
                   <span className="text-4xl font-bold text-white">{formatPriceCard(configPack2, "29.90")}</span>
                   <span className="text-slate-400 text-xs ml-2">Achat unique · valable pour l'année scolaire</span>
@@ -561,9 +621,10 @@ export default function Pricing({ onLogin, onOpenAccount }: PricingProps = {}) {
               </div>
               <button
                 onClick={() => setCheckoutPlan({
-                  name: "Licence individuelle pack enseignant matière + professeur principal",
+                  name: "Licence enseignant matière et professeur principal",
                   price: formatDisplayPrice(configPack2, "29.90"),
-                  features: ["Tout le pack enseignant matière", "Générateur de synthèses de conseils de classe (PP)", "Tableau bilan Conseils de classe"]
+                  pack: 2,
+                  features: ["Toutes les fonctions matière", "Générateur de synthèses de conseils de classe", "Tableau bilan Conseils de classe"]
                 })}
                 className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs py-3 rounded-xl transition-all shadow-lg shadow-blue-500/10 cursor-pointer"
               >
